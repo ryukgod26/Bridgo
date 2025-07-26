@@ -26,25 +26,24 @@ app.use(cors());
 app.use(express.json());
 
 const homeRouter=require("./routes/homeRouter");
-const vendorRoutes = require('./routes/vendorRouter');
-const supplierRoutes = require('./routes/supplierRouter');
+const vendorRouter = require('./routes/vendorRouter');
+const supplierRouter= require('./routes/supplierRouter');
 
 
 app.use("/",homeRouter);
-// app.use('/vendor', userRoutes);
-// app.use('/suppplier', auctionRoutes);
+app.use("/vendor",vendorRouter);
+app.use("/supplier",supplierRouter);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
-}).then(() => console.log("MongoDB connected"))
+}).then(() => console.log(""))
   .catch(err => console.error(err));
 
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
 });
 
 module.exports = { io };

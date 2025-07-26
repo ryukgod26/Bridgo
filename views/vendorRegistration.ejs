@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vendor Registration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f7f7f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height:auto;
+        }
+        .register-container {
+            background: #fff;
+            padding: 2rem 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            width: 400px;
+        }
+        .register-container h1, .register-container h2 {
+            text-align: center;
+        }
+        .register-container h1 {
+            font-size: 2rem;
+            color: #2e86de;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .register-container h2 {
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            color: #333;
+            font-weight: 500;
+        }
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .register-btn {
+            width: 100%;
+            padding: 0.6rem;
+            background: #2e86de;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+        .login-link {
+            display: block;
+            text-align: center;
+            margin-top: 1rem;
+            color: #2e86de;
+            text-decoration: none;
+        }
+        .login-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h1>Vendor Registration</h1>
+        <form action="/vendor/register" method="POST">
+            <div class="form-group">
+                <label for="vendorId">Vendor ID</label>
+                <input type="text" id="vendorId" name="vendorId" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" maxlength="10" required>
+            </div>
+            <div class="form-group">
+                <label for="gst">GST Number</label>
+                <input type="text" id="gst" name="gst" required>
+            </div>
+            <div class="form-group">
+                <label for="address">Address</label>
+                <textarea id="address" name="address" rows="2" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="area">Area of Supply</label>
+                <input type="text" id="area" name="area" required>
+            </div>
+            <div class="form-group">
+                <label for="city">City</label>
+                <input type="text" id="city" name="city" required>
+            </div>
+            <div class="form-group">
+                <label for="state">State</label>
+                <input type="text" id="state" name="state" required>
+            </div>
+            <button class="register-btn" type="submit">Register</button>
+        </form>
+        <a class="login-link" href="/vendor/login">Already have an account? Login here</a>
+    </div>
+</body>
+</html>
