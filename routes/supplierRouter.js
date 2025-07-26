@@ -5,9 +5,10 @@ const Supplier = require("../models/supplierDetails");
 
 router.post("/register", async (req, res) => {
     try {
-        const { supplierId, password, email, phone, gst, address, area, city, state } = req.body;
+        const { supplierId, name,password, email, phone, gst, address, area, city, state } = req.body;
         const newSupplier = new Supplier({
             supplierId,
+            name,
             password,
             email,
             phone,
@@ -33,9 +34,9 @@ router.get("/register", (req, res) => {
 });
 router.get("/", (req, res) => {
     if (!req.session.supplier) {
-        console.log("error aa gya bc")
+        console.log("error aa gya ")
     }
-    res.render("suppiler", { supplier: req.session.supplier });
+    res.render("supplier", { supplier: req.session.supplier });
 });
 
 module.exports = router;

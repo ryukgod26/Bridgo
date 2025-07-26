@@ -5,11 +5,12 @@ const Vendor = require("../models/vendorDetails");
 
 router.post("/register", async (req, res) => {
     try {
-        const { vendorId, password, email, phone, gst, address, area, city, state } = req.body;
+        const { vendorId,name, password, email, phone, gst, address, area, city, state } = req.body;
 
         // Create a new Vendor instance
         const newVendor = new Vendor({
             vendorId,
+            name,
             password,
             email,
             phone,
@@ -37,6 +38,12 @@ router.get("/login", (req, res) => {
 });
 router.get("/register", (req, res) => {
     res.render("vendorRegistration");
+router.get("/", async (req, res) => {
+    if (!req.session.vendor) {
+        console.log("error aa gya ")
+    }
+    res.render("vendor", {vendor: req.session.vendor });
 });
+})
 
 module.exports = router;
