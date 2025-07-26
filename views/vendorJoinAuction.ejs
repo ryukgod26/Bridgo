@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Join Auction - Vendor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background: #f7f9fa;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            padding: 32px 28px 28px 28px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .header h1 {
+            color: #2e86de;
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        .requirement-form {
+            background: #f1f6fa;
+            border-radius: 8px;
+            padding: 18px 22px;
+            margin-bottom: 32px;
+        }
+        .requirement-form label {
+            font-weight: 500;
+            color: #34495e;
+            margin-right: 8px;
+        }
+        .requirement-form input, .requirement-form textarea {
+            width: 100%;
+            padding: 8px 10px;
+            margin: 8px 0 16px 0;
+            border: 1px solid #bfc9d1;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .requirement-form button {
+            background: #2e86de;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 28px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .requirement-form button:hover {
+            background: #1b4f72;
+        }
+        .auctions-list {
+            margin-top: 18px;
+        }
+        .auction-card {
+            background: #eaf2fb;
+            border-radius: 8px;
+            padding: 18px 22px;
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 1px 4px rgba(46, 134, 222, 0.07);
+        }
+        .auction-title {
+            font-size: 1.15rem;
+            color: #2e86de;
+            font-weight: 600;
+        }
+        .auction-details {
+            color: #34495e;
+            font-size: 1rem;
+        }
+        .join-btn {
+            align-self: flex-end;
+            background: #27ae60;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 22px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s;
+            margin-top: 8px;
+        }
+        .join-btn:hover {
+            background: #219150;
+        }
+        @media (max-width: 600px) {
+            .container {
+                max-width: 98vw;
+                padding: 16px 6vw 18px 6vw;
+            }
+            .header h1 {
+                font-size: 1.3rem;
+            }
+            .requirement-form, .auction-card {
+                padding: 12px 8px;
+                font-size: 0.98rem;
+            }
+            .join-btn {
+                width: 100%;
+                font-size: 1rem;
+                padding: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Join a Supplier Auction</h1>
+            <p>Welcome, <strong><%= vendor && vendor.name ? vendor.name : "Vendor" %></strong></p>
+        </div>
+        <form class="requirement-form" action="/vendor/submit-requirement" method="POST">
+            <h2>Enter Your Requirement</h2>
+            <label for="requirement">Requirement Details:</label>
+            <textarea id="requirement" name="requirement" rows="3" required placeholder="Describe your requirement..."></textarea>
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" name="quantity" min="1" required placeholder="Enter quantity">
+            <label for="other">Other Notes (optional):</label>
+            <input type="text" id="other" name="other" placeholder="Any additional notes">
+            <button type="submit">Submit Requirement</button>
+        </form>
+
+        <div class="auctions-list">
+            <h2>Ongoing Supplier Auctions</h2>
+            <% if (auctions && auctions.length > 0) { %>
+                <% auctions.forEach(function(auction) { %>
+                    <div class="auction-card">
+                        <div class="auction-title"><%= auction.title %></div>
+                        <div class="auction-details">
+                            <strong>Organized by:</strong> <%= auction.supplierName %><br>
+                            <strong>Product:</strong> <%= auction.product %><br>
+                            <strong>Start Time:</strong> <%= auction.startTime %><br>
+                            <strong>End Time:</strong> <%= auction.endTime %><br>
+                            <strong>Description:</strong> <%= auction.description %>
+                        </div>
+                        <a class="join-btn" href="/auction/<%= auction._id %>/join">Join Auction</a>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <p style="color:#888; margin-top:12px;">No auctions are currently available to join.</p>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>

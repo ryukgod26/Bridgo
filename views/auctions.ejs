@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Auctions</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f4f8fb;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 36px auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            padding: 32px 28px 36px 28px;
+        }
+        .header {
+            border-bottom: 2px solid #e3e3e3;
+            margin-bottom: 28px;
+            padding-bottom: 18px;
+        }
+        .header h1 {
+            margin: 0 0 8px 0;
+            font-size: 2rem;
+            color: #2e86de;
+        }
+        .header-details {
+            color: #444;
+            font-size: 1.08rem;
+        }
+        .auctions-list {
+            margin-top: 18px;
+        }
+        .auction-card {
+            background: #f8fbff;
+            border: 1px solid #e0e7ef;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            padding: 18px 22px;
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+        }
+        .auction-image {
+            width: 110px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #dbeafe;
+            background: #eaf1fa;
+        }
+        .auction-details {
+            flex: 1;
+        }
+        .auction-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1b4f72;
+            margin-bottom: 6px;
+        }
+        .auction-meta {
+            color: #555;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+        .auction-meta span {
+            display: inline-block;
+            margin-right: 18px;
+        }
+        .no-auctions {
+            color: #888;
+            font-size: 1.1rem;
+            margin-top: 24px;
+            text-align: center;
+        }
+        @media (max-width: 700px) {
+            .container {
+                padding: 12px 2vw 18px 2vw;
+            }
+            .auction-card {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .auction-image {
+                width: 100%;
+                height: 180px;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>My Auctions</h1>
+            <div class="header-details">
+                <strong>Name:</strong> <%= supplier && supplier.name ? supplier.name : "Unknown" %> <br>
+                <strong>Supplier ID:</strong> <%= supplier && supplier.supplierId ? supplier.supplierId : "N/A" %> <br>
+                <strong>Email:</strong> <%= supplier && supplier.email ? supplier.email : "N/A" %> <br>
+                <strong>Phone:</strong> <%= supplier && supplier.phone ? supplier.phone : "N/A" %> <br>
+                <strong>Area:</strong> <%= supplier && supplier.area ? supplier.area : "N/A" %> <br>
+                <strong>City:</strong> <%= supplier && supplier.city ? supplier.city : "N/A" %> <br>
+                <strong>State:</strong> <%= supplier && supplier.state ? supplier.state : "N/A" %>
+            </div>
+        </div>
+        <div class="auctions-list">
+            <% if (auctions && auctions.length > 0) { %>
+                <% auctions.forEach(function(auction) { %>
+                    <div class="auction-card">
+                        <% if (auction.image) { %>
+                            <img class="auction-image" src="<%= auction.image %>" alt="Auction Image">
+                        <% } else { %>
+                            <div class="auction-image" style="display:flex;align-items:center;justify-content:center;color:#aaa;font-size:0.95rem;">No Image</div>
+                        <% } %>
+                        <div class="auction-details">
+                            <div class="auction-title"><%= auction.name %></div>
+                            <div class="auction-meta">
+                                <span><strong>Base Price:</strong> ₹<%= auction.basePrice %></span>
+                                <span><strong>Quantity:</strong> <%= auction.quantity %></span>
+                            </div>
+                            <div class="auction-meta">
+                                <span><strong>Area:</strong> <%= auction.area ? auction.area : "N/A" %></span>
+                                <span><strong>City:</strong> <%= auction.city ? auction.city : "N/A" %></span>
+                                <span><strong>State:</strong> <%= auction.state ? auction.state : "N/A" %></span>
+                            </div>
+                            <div class="auction-meta">
+                                <span><strong>Supplier Name:</strong> <%= auction.supplierName %></span>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="no-auctions">
+                    You have not listed any auctions yet.
+                </div>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>

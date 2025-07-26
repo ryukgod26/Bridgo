@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Stock & Start Auction</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background: #f7f9fa;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .stock-container {
+            max-width: 500px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            padding: 32px 28px 28px 28px;
+        }
+        .stock-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .stock-header h1 {
+            color: #2e86de;
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        .stock-form label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #34495e;
+        }
+        .stock-form input[type="text"],
+        .stock-form input[type="number"] {
+            width: 100%;
+            padding: 9px 12px;
+            margin-bottom: 18px;
+            border: 1px solid #cfd8dc;
+            border-radius: 6px;
+            font-size: 1rem;
+            background: #f8fafc;
+        }
+        .stock-form input[type="file"] {
+            margin-bottom: 18px;
+        }
+        .stock-form button,
+        .auction-link-btn {
+            width: 100%;
+            padding: 12px 0;
+            background: #2e86de;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+        .stock-form button:hover,
+        .auction-link-btn:hover {
+            background: #1b4f72;
+        }
+        #previous_auction_button{
+            background:green;
+        }
+        @media (max-width: 600px) {
+            .stock-container {
+                max-width: 98vw;
+                padding: 16px 6vw 18px 6vw;
+            }
+            .stock-header h1 {
+                font-size: 1.3rem;
+            }
+            .stock-form button,
+            .auction-link-btn {
+                font-size: 1rem;
+                padding: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stock-container">
+        <div class="stock-header">
+            <h1>Add Stock & Start Auction</h1>
+            <p>Fill in the details below to create a new auction for your stock.</p>
+        </div>
+        <form class="stock-form" action="/supplier/auction/auctions" method="POST" enctype="multipart/form-data">
+            <h2>NAME: <%= supplier.name %></h2>
+            <h2>ID: <%= supplier.supplierId %></h2>
+            <label for="name">Stock Name:</label>
+            <input type="text" id="name" name="name" required placeholder="Enter stock name">
+
+            <label for="basePrice">Base Price (₹):</label>
+            <input type="number" id="basePrice" name="basePrice" min="1" required placeholder="Enter base price">
+
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" name="quantity" min="1" required placeholder="Enter quantity">
+
+            <label for="image">Image (optional):</label>
+            <input type="file" id="image" name="image" accept="image/*">
+
+            <label for="area">Area:</label>
+            <input type="text" id="area" name="area" required placeholder="Enter area">
+
+            <label for="city">City:</label>
+            <input type="text" id="city" name="city" required placeholder="Enter city">
+
+            <label for="state">State:</label>
+            <input type="text" id="state" name="state" required placeholder="Enter state">
+
+            <button type="submit">Create Auction</button>
+        </form>
+        <!-- Button to go to supplier's auctions page -->
+        <a href="/supplier/auction/auctionsView" class="auction-link-btn" id="previous_auction_button">View My Auctions</a>
+    </div>
+</body>
+</html>

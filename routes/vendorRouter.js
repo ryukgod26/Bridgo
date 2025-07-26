@@ -31,19 +31,28 @@ router.post("/register", async (req, res) => {
         res.status(400).send("Error registering vendor: " + error.message);
     }
 });
-
+router.get("/logout", (req, res) => {
+    req.session.vendor = null;
+    req.session.destroy(err => {
+        if (err) {
+            return res.status(500).send("Error logging out");
+        }
+        res.redirect("/"); // Render a logout confirmation EJS page
+    });
+});
 
 router.get("/login", (req, res) => {
     res.render("vendorLogin");
 });
 router.get("/register", (req, res) => {
     res.render("vendorRegistration");
+});
 router.get("/", async (req, res) => {
     if (!req.session.vendor) {
-        console.log("error aa gya ")
+        console.log("User not authenticated, redirecting to login");
+        return res.redirect("/vendor/login");
     }
     res.render("vendor", {vendor: req.session.vendor });
 });
-})
 
 module.exports = router;

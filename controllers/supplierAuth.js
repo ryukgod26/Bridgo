@@ -16,6 +16,7 @@ router.post("/supplier/login", async (req, res) => {
         req.session.supplier = {
             supplierId: supplier.supplierId,
             name: supplier.name || supplier.supplierId,
+            email:supplier.email,
             phone: supplier.phone,
             contact: supplier.contact // or supplier.email if your schema uses 'email'
         };
