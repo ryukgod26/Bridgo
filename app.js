@@ -28,11 +28,14 @@ app.use(express.json());
 const homeRouter=require("./routes/homeRouter");
 const vendorRouter = require('./routes/vendorRouter');
 const supplierRouter= require('./routes/supplierRouter');
+const supplierAuth=require("./controllers/supplierAuth");
 
 
-app.use("/",homeRouter);
+
 app.use("/vendor",vendorRouter);
 app.use("/supplier",supplierRouter);
+app.use("/",supplierAuth);
+app.use("/",homeRouter);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI, {

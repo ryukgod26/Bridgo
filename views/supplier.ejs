@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Supplier Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background: #f7f9fa;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .dashboard-container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            padding: 32px 28px 28px 28px;
+        }
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .dashboard-header h1 {
+            color: #2a3b4c;
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+        .supplier-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 32px;
+            background: #f1f6fa;
+            border-radius: 8px;
+            padding: 18px 22px;
+        }
+        .supplier-info label {
+            font-weight: 500;
+            color: #34495e;
+            margin-right: 8px;
+        }
+        .dashboard-actions {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+        }
+        .dashboard-actions a {
+            display: inline-block;
+            padding: 12px 28px;
+            background: #2e86de;
+            color: #fff;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .dashboard-actions a.organise {
+            background: #27ae60;
+        }
+        .dashboard-actions a:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>Supplier Dashboard</h1>
+            <p>Welcome, <strong><%= supplier.name %></strong></p>
+        </div>
+        <div class="supplier-info">
+            <div>
+                <label>Supplier Name:</label>
+                <span><%= supplier.name %></span>
+            </div>
+            <div>
+                <label>Supplier ID:</label>
+                <span><%= supplier.supplierId %></span>
+            </div>
+            <div>
+                <label>Phone:</label>
+                <span><%= supplier.phone %></span>
+            </div>
+            <div>
+                <label>Contact Email:</label>
+                <span><%= supplier.contact %></span>
+            </div>
+        </div>
+        <div class="dashboard-actions">
+            <a href="/auction/join" class="join">Join an Auction</a>
+            <a href="/auction/organise" class="organise">Organise an Auction</a>
+        </div>
+    </div>
+</body>
+</html>

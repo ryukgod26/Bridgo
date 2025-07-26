@@ -31,5 +31,11 @@ router.get("/login", (req, res) => {
 router.get("/register", (req, res) => {
     res.render("supplierRegistration");
 });
+router.get("/", (req, res) => {
+    if (!req.session.supplier) {
+        console.log("error aa gya bc")
+    }
+    res.render("suppiler", { supplier: req.session.supplier });
+});
 
 module.exports = router;
