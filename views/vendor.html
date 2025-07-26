@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="vendor.css">
+    <style>
+        body {
+            background: #f7f9fa;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        .vendor-raw-material-section {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 32px 28px 28px 28px;
+        }
+        .vendor-raw-material-section h2 {
+            color: #2a3b4c;
+            margin-bottom: 18px;
+            font-size: 2rem;
+            text-align: center;
+        }
+        #rawMaterialForm {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+        #rawMaterialForm label {
+            font-weight: 500;
+            color: #34495e;
+        }
+        #rawMaterialInput, #areaInput {
+            padding: 8px 12px;
+            border: 1px solid #bfc9d1;
+            border-radius: 6px;
+            font-size: 1rem;
+            min-width: 180px;
+        }
+        #rawMaterialForm button {
+            background: #2e86de;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 18px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        #rawMaterialForm button:hover {
+            background: #1b4f72;
+        }
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 8px;
+            border: 1px solid #e1e5ea;
+        }
+        #supplierList {
+            margin-top: 24px;
+        }
+        #supplierList h3 {
+            color: #2e4053;
+            margin-bottom: 10px;
+        }
+        #supplierList ul {
+            list-style: none;
+            padding: 0;
+        }
+        #supplierList li {
+            background: #f1f6fa;
+            margin-bottom: 10px;
+            padding: 12px 16px;
+            border-radius: 6px;
+            box-shadow: 0 1px 4px rgba(44,62,80,0.04);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .supplier-rating {
+            color: #f1c40f;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .supplier-distance {
+            color: #7b8a8b;
+            font-size: 0.95em;
+            margin-left: 16px;
+        }
+        .no-vendors-message {
+            color: #c0392b;
+            background: #fbeee6;
+            border: 1px solid #f5c6cb;
+            border-radius: 6px;
+            padding: 16px;
+            margin-top: 18px;
+            text-align: center;
+            font-size: 1.08em;
+        }
+        @media (max-width: 600px) {
+            .vendor-raw-material-section {
+                padding: 16px 6px 18px 6px;
+            }
+            #map {
+                height: 250px;
+            }
+        }
+    </style>
+    <title>Bridgo | Street Food Vendor</title>
+</head>
+<body>
+    <main>
+        <div id="page1">
+        <div class="vendor-raw-material-section">
+            <h2>Find Local Street Food Vendors Area Wise</h2>
+            <form id="rawMaterialForm">
+                <label for="rawMaterialInput">Enter Food Item:</label>
+                <input type="text" id="rawMaterialInput" name="foodItem" placeholder="e.g. Chaat, Dosa, Momos, etc." required>
+                <label for="areaInput">Enter Area/Locality:</label>
+                <input type="text" id="areaInput" name="area" placeholder="e.g. Chandni Chowk, Bandra, etc." required>
+                <button type="submit">Show Vendors</button>
+            </form>
+            <div id="map"></div>
+            <div id="supplierList"></div>
+        </div>
+
+        <script>
+        // Initialize map (using Leaflet.js CDN)
+        var map;
+        var markers = [];
+        var userLocation = null;
+
+        // Dummy street food vendor data, area-wise
+        const vendors = [
+            { name: "Sharma Chaat Bhandar", food: "Chaat", lat: 28.6562, lng: 77.2301, area: "Chandni Chowk", city: "Delhi", rating: 4.8 },
+            { name: "Bandra Dosa Corner", food: "Dosa", lat: 19.0606, lng: 72.8365, area: "Bandra", city: "Mumbai", rating: 4.6 },
+            { name: "Momo King", food: "Momos", lat: 28.6448, lng: 77.2167, area: "Connaught Place", city: "Delhi", rating: 4.5 },
+            { name: "Tunday Kababi", food: "Kebabs", lat: 26.8643, lng: 80.9462, area: "Aminabad", city: "Lucknow", rating: 4.9 },
+            { name: "Gariahat Puchka", food: "Puchka", lat: 22.5162, lng: 88.3666, area: "Gariahat", city: "Kolkata", rating: 4.7 },
+            { name: "Anna Idli", food: "Idli", lat: 13.0604, lng: 80.2496, area: "T Nagar", city: "Chennai", rating: 4.4 },
+            { name: "Bhole Chaat", food: "Chaat", lat: 26.9124, lng: 75.7873, area: "MI Road", city: "Jaipur", rating: 4.3 },
+            { name: "Punjabi Samosa", food: "Samosa", lat: 28.5355, lng: 77.3910, area: "Sector 18", city: "Noida", rating: 4.2 },
+            { name: "Bandra Frankie", food: "Frankie", lat: 19.0606, lng: 72.8365, area: "Bandra", city: "Mumbai", rating: 4.5 },
+            { name: "Hyderabad Biryani Cart", food: "Biryani", lat: 17.3850, lng: 78.4867, area: "Charminar", city: "Hyderabad", rating: 4.6 }
+        ];
+
+        // Haversine formula to calculate distance between two lat/lng points in km
+        function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+            function deg2rad(deg) { return deg * (Math.PI/180); }
+            var R = 6371; // Radius of the earth in km
+            var dLat = deg2rad(lat2-lat1);
+            var dLon = deg2rad(lon2-lon1);
+            var a =
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                Math.sin(dLon/2) * Math.sin(dLon/2)
+                ;
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            var d = R * c; // Distance in km
+            return d;
+        }
+
+        function initMap(center) {
+            map = L.map('map').setView(center || [22.9734, 78.6569], center ? 12 : 5); // Centered on India or user
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+        }
+
+        function showVendorsOnMap(filteredVendors) {
+            // Remove old markers
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+
+            filteredVendors.forEach(vendor => {
+                var marker = L.marker([vendor.lat, vendor.lng]).addTo(map)
+                    .bindPopup(
+                        `<b>${vendor.name}</b><br>${vendor.area}, ${vendor.city}<br>Food: ${vendor.food}<br>Rating: <span style="color:#f1c40f;">${vendor.rating} ★</span>`
+                        + (vendor.distance !== undefined ? `<br>Distance: ${vendor.distance.toFixed(1)} km` : '')
+                    );
+                markers.push(marker);
+            });
+
+            if (filteredVendors.length > 0) {
+                var group = new L.featureGroup(markers);
+                map.fitBounds(group.getBounds().pad(0.3));
+            } else {
+                // Optionally, you can reset the map view or show a message on the map
+                // For now, do nothing if no vendors
+            }
+        }
+
+        function showVendorList(filteredVendors, areaInput) {
+            const listDiv = document.getElementById('supplierList');
+            if (filteredVendors.length === 0) {
+                listDiv.innerHTML = `<div class="no-vendors-message">
+                    <strong>No street food vendors found for your search.</strong><br>
+                    Please try a different food item or area.<br>
+                    <span style="font-size:0.95em;color:#888;">Tip: Try using a more general food name or check your spelling.</span>
+                </div>`;
+                return;
+            }
+            let html = `<h3>Vendors in <span style="color:#2e86de">${areaInput}</span> (sorted by rating & proximity):</h3><ul>`;
+            filteredVendors.forEach(vendor => {
+                html += `<li>
+                    <span>
+                        <strong>${vendor.name}</strong> (${vendor.area}, ${vendor.city}) - ${vendor.food}
+                        <span class="supplier-rating">${vendor.rating} ★</span>
+                        ${vendor.distance !== undefined ? `<span class="supplier-distance">${vendor.distance.toFixed(1)} km away</span>` : ''}
+                    </span>
+                </li>`;
+            });
+            html += "</ul>";
+            listDiv.innerHTML = html;
+        }
+
+        function filterAndSortVendors(foodInput, areaInput, userLoc) {
+            let filtered = vendors.filter(v =>
+                v.food.toLowerCase().includes(foodInput) &&
+                v.area.toLowerCase().includes(areaInput)
+            );
+            // If user location is available, calculate distance
+            if (userLoc) {
+                filtered.forEach(v => {
+                    v.distance = getDistanceFromLatLonInKm(userLoc.lat, userLoc.lng, v.lat, v.lng);
+                });
+                // Sort by: rating DESC, then distance ASC
+                filtered.sort((a, b) => {
+                    if (b.rating !== a.rating) return b.rating - a.rating;
+                    return a.distance - b.distance;
+                });
+            } else {
+                // Sort by rating only
+                filtered.sort((a, b) => b.rating - a.rating);
+            }
+            return filtered;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load Leaflet.js dynamically
+            var leafletCSS = document.createElement('link');
+            leafletCSS.rel = 'stylesheet';
+            leafletCSS.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+            document.head.appendChild(leafletCSS);
+
+            var leafletScript = document.createElement('script');
+            leafletScript.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+            leafletScript.onload = function() {
+                // Try to get user location
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        userLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        initMap([userLocation.lat, userLocation.lng]);
+                        // Add user marker
+                        L.marker([userLocation.lat, userLocation.lng], {icon: L.icon({
+                            iconUrl: 'https://cdn-icons-png.flaticon.com/512/64/64113.png',
+                            iconSize: [32, 32],
+                            iconAnchor: [16, 32]
+                        })}).addTo(map).bindPopup("You are here").openPopup();
+                    }, function() {
+                        initMap();
+                    });
+                } else {
+                    initMap();
+                }
+            };
+            document.body.appendChild(leafletScript);
+
+            document.getElementById('rawMaterialForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const foodInput = document.getElementById('rawMaterialInput').value.trim().toLowerCase();
+                const areaInput = document.getElementById('areaInput').value.trim().toLowerCase();
+                let filtered;
+                if (userLocation) {
+                    filtered = filterAndSortVendors(foodInput, areaInput, userLocation);
+                } else {
+                    filtered = filterAndSortVendors(foodInput, areaInput, null);
+                }
+                showVendorsOnMap(filtered);
+                showVendorList(filtered, document.getElementById('areaInput').value.trim());
+            });
+        });
+        </script>
+        </div>
+    </main>
+</body>
+</html>

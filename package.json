@@ -1,0 +1,26 @@
+{
+  "name": "hackathon",
+  "version": "1.0.0",
+  "description": "This is the solution project for hackathon",
+  "main": "app.js",
+  "scripts": {
+    "test": "run"
+  },
+  "author": "Team Global",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.5",
+    "nodemon": "^3.1.10",
+    "path": "^0.12.7",
+    "route": "^0.2.5",
+    "router": "^2.2.0",
+    "socket.io": "^4.8.1",
+    "stack": "^0.1.0"
+  }
+}
