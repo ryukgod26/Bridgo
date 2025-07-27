@@ -75,8 +75,8 @@ io.on('connection', (socket) => {
     try {
       const { auctionId, vendorId, vendorName, bidAmount } = data;
       
-      // Emit to all users in the auction room
-      socket.to(`auction_${auctionId}`).emit('newBid', {
+      // Emit to all users in the auction room (including sender)
+      io.to(`auction_${auctionId}`).emit('newBid', {
         auctionId,
         vendorId,
         vendorName,
@@ -92,7 +92,7 @@ io.on('connection', (socket) => {
 
   // Handle auction end
   socket.on('auctionEnded', (auctionId) => {
-    socket.to(`auction_${auctionId}`).emit('auctionEnded', {
+    io.to(`auction_${auctionId}`).emit('auctionEnded', {
       auctionId,
       timestamp: new Date()
     });

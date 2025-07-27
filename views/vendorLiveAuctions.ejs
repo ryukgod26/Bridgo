@@ -2,20 +2,117 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Live Auctions - Vendor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Auctions - Vendor - Bridgo</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
             background: #f7f9fa;
-            margin: 0;
-            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
+        
+        /* Navigation Bar */
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .nav-logo img {
+            height: 40px;
+            width: 40px;
+            margin-right: 10px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-menu li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+        
+        .nav-menu li a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .nav-menu li a.active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+        
+        /* Main Content */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
         .container {
             max-width: 1200px;
             margin: 20px auto;
             padding: 0 20px;
         }
+        
         .header {
             background: linear-gradient(135deg, #2e86de, #1b4f72);
             color: white;
@@ -24,21 +121,103 @@
             margin-bottom: 30px;
             text-align: center;
         }
+        
         .header h1 {
             margin: 0 0 10px 0;
             font-size: 2.5rem;
         }
+        
         .header p {
             margin: 0;
             font-size: 1.2rem;
             opacity: 0.9;
         }
+        
+        /* Search Panel */
+        .search-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        
+        .search-panel h3 {
+            margin: 0 0 15px 0;
+            color: #2e86de;
+        }
+        
+        .search-controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .search-btn {
+            background: #2e86de;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .search-btn:hover {
+            background: #1b4f72;
+        }
+        
+        .clear-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .clear-btn:hover {
+            background: #545b62;
+        }
+        
+        /* Section Headers */
+        .section-header {
+            margin: 40px 0 20px 0;
+            font-size: 1.8rem;
+            border-bottom: 3px solid;
+            padding-bottom: 10px;
+        }
+        
+        .local-header {
+            color: #28a745;
+            border-bottom-color: #28a745;
+        }
+        
+        .global-header {
+            color: #6c757d;
+            border-bottom-color: #6c757d;
+        }
+        
         .auctions-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
             gap: 30px;
             margin-bottom: 30px;
         }
+        
         .auction-card {
             background: white;
             border-radius: 12px;
@@ -46,10 +225,12 @@
             overflow: hidden;
             transition: transform 0.2s, box-shadow 0.2s;
         }
+        
         .auction-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
+        
         .auction-image {
             width: 100%;
             height: 180px;
@@ -57,21 +238,25 @@
             border-radius: 8px;
             background: #f8f9fa;
         }
+        
         .auction-content {
             padding: 20px;
         }
+        
         .auction-title {
             font-size: 1.3rem;
             font-weight: 600;
             color: #2e86de;
             margin-bottom: 10px;
         }
+        
         .auction-details {
             color: #666;
             font-size: 0.95rem;
             line-height: 1.6;
             margin-top: 15px;
         }
+        
         .auction-details p {
             margin: 8px 0;
             display: flex;
@@ -80,17 +265,21 @@
             padding: 8px 0;
             border-bottom: 1px solid #f1f3f4;
         }
+        
         .auction-details p:last-child {
             border-bottom: none;
         }
+        
         .detail-label {
             font-weight: 600;
             color: #495057;
         }
+        
         .detail-value {
             color: #2e86de;
             font-weight: 500;
         }
+        
         .live-badge {
             display: inline-block;
             background: #e74c3c;
@@ -98,10 +287,11 @@
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 0.8rem;
-            font-weight: bold;
-            margin-bottom: 10px;
+            font-weight: 600;
+            margin-left: 10px;
             animation: pulse 2s infinite;
         }
+        
         .ended-badge {
             display: inline-block;
             background: #6c757d;
@@ -109,41 +299,50 @@
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 0.8rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-            animation: none;
+            font-weight: 600;
+            margin-left: 10px;
         }
+        
         @keyframes pulse {
             0% { opacity: 1; }
             50% { opacity: 0.7; }
             100% { opacity: 1; }
         }
+        
         .join-btn {
-            display: block;
-            width: 100%;
-            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            display: inline-block;
+            background: #27ae60;
             color: white;
-            text-align: center;
-            padding: 15px;
             text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background 0.2s;
+            margin-top: 15px;
+        }
+        
+        .join-btn:hover {
+            background: #218838;
+        }
+        
+        .current-bid {
+            background: linear-gradient(135deg, #fff5f5, #fed7d7);
+            padding: 15px;
             border-radius: 8px;
-            font-weight: 600;
-            margin-top: 20px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2);
+            margin-top: 15px;
+            border: 1px solid #feb2b2;
+        }
+        
+        .current-bid strong {
+            color: #e53e3e;
             font-size: 1.1rem;
         }
-        .join-btn:hover {
-            background: linear-gradient(135deg, #219150, #27ae60);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.3);
+        
+        .current-bid small {
+            color: #718096;
+            font-size: 0.9rem;
         }
-        .no-auctions {
-            text-align: center;
-            padding: 60px 20px;
-            color: #666;
-            font-size: 1.2rem;
-        }
+        
         .timer {
             color: #e74c3c;
             font-weight: bold;
@@ -152,229 +351,429 @@
             padding: 12px 16px;
             border-radius: 8px;
             border: 1px solid #feb2b2;
-            text-align: center;
             font-size: 1.2rem;
             box-shadow: 0 2px 4px rgba(229, 62, 62, 0.1);
         }
-        .current-bid {
-            background: linear-gradient(135deg, #fff5f5, #fed7d7);
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            border: 1px solid #feb2b2;
+        
+        .no-auctions {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
         }
-        .current-bid strong {
-            color: #e53e3e;
+        
+        .no-auctions h3 {
+            margin-bottom: 15px;
+            color: #495057;
+        }
+        
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 1rem 0;
+            margin-top: auto;
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-section {
+            text-align: center;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 0.5rem;
             font-size: 1.1rem;
         }
-        .current-bid small {
-            color: #718096;
+        
+        .footer-section a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.3rem;
+            transition: color 0.3s;
+        }
+        
+        .footer-section a:hover {
+            color: #3498db;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding: 0.5rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 1rem;
+        }
+        
+        .footer-bottom p {
+            color: #bdc3c7;
             font-size: 0.9rem;
         }
+        
+        /* Mobile Responsive */
         @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-menu {
+                flex-direction: column;
+                gap: 1rem;
+                width: 100%;
+            }
+            
+            .nav-menu li {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .nav-menu li a {
+                display: block;
+                padding: 0.8rem;
+            }
+            
+            .hamburger {
+                display: flex;
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+            
+            .nav-menu.active {
+                display: flex;
+            }
+            
             .container {
                 padding: 0 15px;
             }
+            
+            .header {
+                padding: 20px;
+            }
+            
             .header h1 {
                 font-size: 2rem;
             }
+            
+            .header p {
+                font-size: 1rem;
+            }
+            
+            .search-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-input {
+                min-width: auto;
+            }
+            
             .auctions-grid {
                 grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .section-header {
+                font-size: 1.5rem;
+            }
+            
+            .footer-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .auction-content {
+                padding: 15px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🔴 Live Auctions</h1>
-            <p>Welcome, <strong><%= vendor.name %></strong>! Join live auctions and place your bids in real-time.</p>
-        </div>
-
-        <!-- Search Panel -->
-        <div style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 30px; box-shadow: 0 2px 12px rgba(0,0,0,0.07);">
-            <h3 style="margin: 0 0 15px 0; color: #2e86de;">🔍 Search Auctions</h3>
-            <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
-                <input type="text" id="search-item" placeholder="Enter item name (e.g., rice, wheat, sugar)" style="flex: 1; min-width: 250px; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
-                <button onclick="searchAuctions()" style="background: #2e86de; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: background 0.2s;">Search</button>
-                <button onclick="clearSearch()" style="background: #6c757d; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: background 0.2s;">Clear</button>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="/" class="nav-logo">
+                    <img src="/images/logo.png" alt="Bridgo Logo">
+                </a>
+            </div>
+            <div class="nav-right">
+                <ul class="nav-menu">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/vendor/login" class="active">Vendor</a></li>
+                    <li><a href="/supplier/login">Supplier</a></li>
+                </ul>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
         </div>
+    </nav>
 
-        <% if (auctions && auctions.length > 0) { %>
-            <!-- Local Auctions (Same City) -->
-            <div style="margin-bottom: 40px;">
-                <h2 style="color: #28a745; margin-bottom: 20px; font-size: 1.8rem; border-bottom: 3px solid #28a745; padding-bottom: 10px;">
-                    🏠 Local Auctions (<%= vendor.city || 'Your City' %>)
-                </h2>
-                <div class="auctions-grid" id="local-auctions">
-                    <% 
-                    const localAuctions = auctions.filter(auction => 
-                        auction.supplierName && 
-                        auction.supplierName.toLowerCase().includes((vendor.city || '').toLowerCase())
-                    );
-                    %>
-                    <% if (localAuctions.length > 0) { %>
-                        <% localAuctions.forEach(function(auction) { %>
-                    <div class="auction-card">
-                        <% if (auction.image) { %>
-                            <img class="auction-image" src="<%= auction.image %>" alt="<%= auction.name %>">
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <div class="header">
+                <h1>🔴 Live Auctions</h1>
+                <p>Welcome, <strong><%= vendor.name %></strong>! Join live auctions and place your bids in real-time.</p>
+            </div>
+            
+            <!-- Search Panel -->
+            <div class="search-panel">
+                <h3>🔍 Search Auctions</h3>
+                <div class="search-controls">
+                    <input type="text" id="search-item" placeholder="Enter item name (e.g., rice, wheat, sugar)" class="search-input">
+                    <button onclick="searchAuctions()" class="search-btn">Search</button>
+                    <button onclick="clearSearch()" class="clear-btn">Clear</button>
+                </div>
+            </div>
+            
+            <% if (auctions && auctions.length > 0) { %>
+                <!-- Local Auctions (Same City) -->
+                <div>
+                    <h2 class="section-header local-header">
+                        🏠 Local Auctions (<%= vendor.city || 'Your City' %>)
+                    </h2>
+                    <div class="auctions-grid" id="local-auctions">
+                        <% 
+                        const localAuctions = auctions.filter(auction => 
+                            auction.supplierName && 
+                            auction.supplierName.toLowerCase().includes((vendor.city || '').toLowerCase())
+                        );
+                        %>
+                        <% if (localAuctions.length > 0) { %>
+                            <% localAuctions.forEach(function(auction) { %>
+                                <div class="auction-card" data-item-name="<%= auction.name.toLowerCase() %>">
+                                    <% if (auction.image) { %>
+                                        <img class="auction-image" src="<%= auction.image %>" alt="<%= auction.name %>">
+                                    <% } else { %>
+                                        <div class="auction-image" style="display: flex; align-items: center; justify-content: center; color: #999; font-size: 0.9rem; background: #f8f9fa; border: 1px dashed #dee2e6;">
+                                            📷<br>No Image
+                                        </div>
+                                    <% } %>
+                                    
+                                    <div class="auction-content">
+                                        <% if (auction.auctionEnd && new Date(auction.auctionEnd) <= new Date()) { %>
+                                            <div class="ended-badge">🟢 ENDED</div>
+                                        <% } else { %>
+                                            <div class="live-badge">🔴 LIVE</div>
+                                        <% } %>
+                                        <div class="auction-title"><%= auction.name %></div>
+                                        
+                                        <div class="auction-details">
+                                            <p>
+                                                <span class="detail-label">💰 Base Price:</span>
+                                                <span class="detail-value">₹<%= auction.basePrice %></span>
+                                            </p>
+                                            <p>
+                                                <span class="detail-label">📦 Quantity:</span>
+                                                <span class="detail-value"><%= auction.quantity %></span>
+                                            </p>
+                                            <p>
+                                                <span class="detail-label">📍 Location:</span>
+                                                <span class="detail-value"><%= auction.area %>, <%= auction.city %></span>
+                                            </p>
+                                            <p>
+                                                <span class="detail-label">🏢 Supplier:</span>
+                                                <span class="detail-value"><%= auction.supplierName %></span>
+                                            </p>
+                                            
+                                            <% if (auction.currentBid && auction.currentBid > auction.basePrice) { %>
+                                                <div class="current-bid">
+                                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                                        <span class="detail-label">🔥 Current Bid:</span>
+                                                        <span class="detail-value" style="color: #e53e3e; font-size: 1.2rem;" data-bid-amount="<%= auction.currentBid %>">₹<%= auction.currentBid %></span>
+                                                    </div>
+                                                    <div style="text-align: center; color: #718096; font-size: 0.9rem;">
+                                                        by <strong data-bidder="<%= auction.currentBidder || 'Unknown' %>"><%= auction.currentBidder || 'Unknown' %></strong>
+                                                    </div>
+                                                </div>
+                                            <% } %>
+                                            
+                                            <% if (auction.auctionEnd) { %>
+                                                <div class="timer" id="timer-<%= auction._id %>">
+                                                    <span id="end-time-<%= auction._id %>" style="display: none;"><%= auction.auctionEnd.toISOString() %></span>
+                                                    <span id="countdown-<%= auction._id %>">⏰ Loading timer...</span>
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                        
+                                        <a href="/supplier/live-auction/<%= auction._id %>" class="join-btn">Join Auction</a>
+                                    </div>
+                                </div>
+                            <% }); %>
                         <% } else { %>
-                            <div class="auction-image" style="display: flex; align-items: center; justify-content: center; color: #999; font-size: 0.9rem; background: #f8f9fa; border: 1px dashed #dee2e6;">
-                                📷<br>No Image
+                            <div style="text-align: center; padding: 30px; color: #666; background: #f8f9fa; border-radius: 8px; grid-column: 1 / -1;">
+                                <p>No local auctions available in <%= vendor.city || 'your city' %></p>
                             </div>
                         <% } %>
-                        
-                        <div class="auction-content">
-                            <% if (auction.auctionEnd && new Date(auction.auctionEnd) <= new Date()) { %>
-                                <div class="ended-badge">🟢 ENDED</div>
-                            <% } else { %>
-                                <div class="live-badge">🔴 LIVE</div>
-                            <% } %>
-                            <div class="auction-title"><%= auction.name %></div>
-                            
-                            <div class="auction-details">
-                                <p>
-                                    <span class="detail-label">💰 Base Price:</span>
-                                    <span class="detail-value">₹<%= auction.basePrice %></span>
-                                </p>
-                                <p>
-                                    <span class="detail-label">📦 Quantity:</span>
-                                    <span class="detail-value"><%= auction.quantity %></span>
-                                </p>
-                                <p>
-                                    <span class="detail-label">📍 Location:</span>
-                                    <span class="detail-value"><%= auction.area %>, <%= auction.city %></span>
-                                </p>
-                                <p>
-                                    <span class="detail-label">🏢 Supplier:</span>
-                                    <span class="detail-value"><%= auction.supplierName %></span>
-                                </p>
-                                
-                                <% if (auction.currentBid && auction.currentBid > auction.basePrice) { %>
-                                    <div class="current-bid">
-                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                                            <span class="detail-label">🔥 Current Bid:</span>
-                                            <span class="detail-value" style="color: #e53e3e; font-size: 1.2rem;">₹<%= auction.currentBid %></span>
-                                        </div>
-                                        <div style="text-align: center; color: #718096; font-size: 0.9rem;">
-                                            by <strong><%= auction.currentBidder || 'Unknown' %></strong>
-                                        </div>
-                                    </div>
-                                <% } %>
-                                
-                                <% if (auction.auctionEnd) { %>
-                                    <div class="timer" id="timer-<%= auction._id %>">
-                                        <span id="end-time-<%= auction._id %>" style="display: none;"><%= auction.auctionEnd.toISOString() %></span>
-                                        <span id="countdown-<%= auction._id %>">⏰ Loading timer...</span>
-                                    </div>
-                                <% } %>
-                            </div>
-                            
-                            <a href="/vendor/join-auction/<%= auction._id %>" class="join-btn">Join Auction</a>
-                        </div>
                     </div>
-                        <% }); %>
-                    <% } else { %>
-                        <div style="text-align: center; padding: 30px; color: #666; background: #f8f9fa; border-radius: 8px;">
-                            <p>No local auctions available in <%= vendor.city || 'your city' %></p>
-                        </div>
-                    <% } %>
                 </div>
-            </div>
 
-            <!-- Other Auctions (Different Cities) -->
-            <div>
-                <h2 style="color: #6c757d; margin-bottom: 20px; font-size: 1.8rem; border-bottom: 3px solid #6c757d; padding-bottom: 10px;">
-                    🌍 Other Auctions
-                </h2>
-                <div class="auctions-grid" id="other-auctions">
-                    <% 
-                    const otherAuctions = auctions.filter(auction => 
-                        !auction.supplierName || 
-                        !auction.supplierName.toLowerCase().includes((vendor.city || '').toLowerCase())
-                    );
-                    %>
-                    <% if (otherAuctions.length > 0) { %>
-                        <% otherAuctions.forEach(function(auction) { %>
-                            <div class="auction-card" data-item-name="<%= auction.name.toLowerCase() %>">
-                                <% if (auction.image) { %>
-                                    <img class="auction-image" src="<%= auction.image %>" alt="<%= auction.name %>">
-                                <% } else { %>
-                                    <div class="auction-image" style="display: flex; align-items: center; justify-content: center; color: #999; font-size: 0.9rem; background: #f8f9fa; border: 1px dashed #dee2e6;">
-                                        📷<br>No Image
-                                    </div>
-                                <% } %>
-                                
-                                <div class="auction-content">
-                                    <% if (auction.auctionEnd && new Date(auction.auctionEnd) <= new Date()) { %>
-                                        <div class="ended-badge">🟢 ENDED</div>
+                <!-- Other Auctions (Different Cities) -->
+                <div>
+                    <h2 class="section-header global-header">
+                        🌍 Other Auctions
+                    </h2>
+                    <div class="auctions-grid" id="other-auctions">
+                        <% 
+                        const otherAuctions = auctions.filter(auction => 
+                            !auction.supplierName || 
+                            !auction.supplierName.toLowerCase().includes((vendor.city || '').toLowerCase())
+                        );
+                        %>
+                        <% if (otherAuctions.length > 0) { %>
+                            <% otherAuctions.forEach(function(auction) { %>
+                                <div class="auction-card" data-item-name="<%= auction.name.toLowerCase() %>">
+                                    <% if (auction.image) { %>
+                                        <img class="auction-image" src="<%= auction.image %>" alt="<%= auction.name %>">
                                     <% } else { %>
-                                        <div class="live-badge">🔴 LIVE</div>
+                                        <div class="auction-image" style="display: flex; align-items: center; justify-content: center; color: #999; font-size: 0.9rem; background: #f8f9fa; border: 1px dashed #dee2e6;">
+                                            📷<br>No Image
+                                        </div>
                                     <% } %>
-                                    <div class="auction-title"><%= auction.name %></div>
                                     
-                                    <div class="auction-details">
-                                        <p>
-                                            <span class="detail-label">💰 Base Price:</span>
-                                            <span class="detail-value">₹<%= auction.basePrice %></span>
-                                        </p>
-                                        <p>
-                                            <span class="detail-label">📦 Quantity:</span>
-                                            <span class="detail-value"><%= auction.quantity %></span>
-                                        </p>
-                                        <p>
-                                            <span class="detail-label">📍 Location:</span>
-                                            <span class="detail-value"><%= auction.area %>, <%= auction.city %></span>
-                                        </p>
-                                        <p>
-                                            <span class="detail-label">🏢 Supplier:</span>
-                                            <span class="detail-value"><%= auction.supplierName %></span>
-                                        </p>
-                                        
-                                        <% if (auction.currentBid && auction.currentBid > auction.basePrice) { %>
-                                            <div class="current-bid">
-                                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                                                    <span class="detail-label">🔥 Current Bid:</span>
-                                                    <span class="detail-value" style="color: #e53e3e; font-size: 1.2rem;">₹<%= auction.currentBid %></span>
-                                                </div>
-                                                <div style="text-align: center; color: #718096; font-size: 0.9rem;">
-                                                    by <strong><%= auction.currentBidder || 'Unknown' %></strong>
-                                                </div>
-                                            </div>
+                                    <div class="auction-content">
+                                        <% if (auction.auctionEnd && new Date(auction.auctionEnd) <= new Date()) { %>
+                                            <div class="ended-badge">🟢 ENDED</div>
+                                        <% } else { %>
+                                            <div class="live-badge">🔴 LIVE</div>
                                         <% } %>
+                                        <div class="auction-title"><%= auction.name %></div>
                                         
-                                        <% if (auction.auctionEnd) { %>
-                                            <div class="timer" id="timer-<%= auction._id %>">
-                                                <span id="end-time-<%= auction._id %>" style="display: none;"><%= auction.auctionEnd.toISOString() %></span>
-                                                <span id="countdown-<%= auction._id %>">⏰ Loading timer...</span>
-                                            </div>
-                                        <% } %>
+                                        <div class="auction-details">
+                                            <p>
+                                                <span class="detail-label">💰 Base Price:</span>
+                                                <span class="detail-value">₹<%= auction.basePrice %></span>
+                                            </p>
+                                            <p>
+                                                <span class="detail-label">📦 Quantity:</span>
+                                                <span class="detail-value"><%= auction.quantity %></span>
+                                            </p>
+                                            <p>
+                                                <span class="detail-label">📍 Location:</span>
+                                                <span class="detail-value"><%= auction.area %>, <%= auction.city %></span>
+                                            </p>
+                                            <p>
+                                                <span class="detail-label">🏢 Supplier:</span>
+                                                <span class="detail-value"><%= auction.supplierName %></span>
+                                            </p>
+                                            
+                                            <% if (auction.currentBid && auction.currentBid > auction.basePrice) { %>
+                                                <div class="current-bid">
+                                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                                        <span class="detail-label">🔥 Current Bid:</span>
+                                                        <span class="detail-value" style="color: #e53e3e; font-size: 1.2rem;" data-bid-amount="<%= auction.currentBid %>">₹<%= auction.currentBid %></span>
+                                                    </div>
+                                                    <div style="text-align: center; color: #718096; font-size: 0.9rem;">
+                                                        by <strong data-bidder="<%= auction.currentBidder || 'Unknown' %>"><%= auction.currentBidder || 'Unknown' %></strong>
+                                                    </div>
+                                                </div>
+                                            <% } %>
+                                            
+                                            <% if (auction.auctionEnd) { %>
+                                                <div class="timer" id="timer-<%= auction._id %>">
+                                                    <span id="end-time-<%= auction._id %>" style="display: none;"><%= auction.auctionEnd.toISOString() %></span>
+                                                    <span id="countdown-<%= auction._id %>">⏰ Loading timer...</span>
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                        
+                                        <a href="/supplier/live-auction/<%= auction._id %>" class="join-btn">Join Auction</a>
                                     </div>
-                                    
-                                    <a href="/vendor/join-auction/<%= auction._id %>" class="join-btn">Join Auction</a>
                                 </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div style="text-align: center; padding: 30px; color: #666; background: #f8f9fa; border-radius: 8px; grid-column: 1 / -1;">
+                                <p>No other auctions available</p>
                             </div>
-                        <% }); %>
-                    <% } else { %>
-                        <div style="text-align: center; padding: 30px; color: #666; background: #f8f9fa; border-radius: 8px;">
-                            <p>No other auctions available</p>
-                        </div>
-                    <% } %>
+                        <% } %>
+                    </div>
                 </div>
+            <% } else { %>
+                <div class="no-auctions">
+                    <h3>No Live Auctions Available</h3>
+                    <p>There are currently no live auctions. Check back later!</p>
+                </div>
+            <% } %>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="/">Home</a>
+                <a href="/vendor/login">Vendor Login</a>
+                <a href="/supplier/login">Supplier Login</a>
             </div>
-        <% } else { %>
-            <div class="no-auctions">
-                <h2>No Live Auctions Available</h2>
-                <p>There are currently no live auctions. Check back later!</p>
-            </div>
-        <% } %>
-    </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Team Global. All rights reserved.</p>
+        </div>
+    </footer>
 
     <!-- Socket.IO Client -->
     <script src="/socket.io/socket.io.js"></script>
     <script>
+        // Mobile menu toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+        
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+        
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // Socket.IO for real-time bidding
         const socket = io();
+        
+        // Connection status
+        socket.on('connect', () => {
+            console.log('Connected to Socket.IO server');
+        });
+        
+        socket.on('disconnect', () => {
+            console.log('Disconnected from Socket.IO server');
+        });
+        
+        socket.on('connect_error', (error) => {
+            console.error('Socket.IO connection error:', error);
+        });
         
         // Search functionality
         function searchAuctions() {
@@ -409,19 +808,67 @@
             });
         }
         
-        // Add data-item-name to local auction cards
-        document.addEventListener('DOMContentLoaded', function() {
-            const localAuctionCards = document.querySelectorAll('#local-auctions .auction-card');
-            localAuctionCards.forEach(card => {
-                const title = card.querySelector('.auction-title')?.textContent || '';
-                card.setAttribute('data-item-name', title.toLowerCase());
-            });
-        });
-        
         // Listen for new auctions starting
         socket.on('auctionStarted', (data) => {
             // You could add logic here to dynamically add new auctions to the page
             location.reload(); // Simple approach: reload the page
+        });
+        
+        // Listen for new bids and update auction cards
+        socket.on('newBid', (data) => {
+            console.log('Received new bid in vendor page:', data);
+            // Find the auction card for this bid
+            const auctionCards = document.querySelectorAll('.auction-card');
+            auctionCards.forEach(card => {
+                const joinBtn = card.querySelector('.join-btn');
+                if (joinBtn && joinBtn.href.includes(data.auctionId)) {
+                    // Update current bid display
+                    const currentBidElement = card.querySelector('[data-bid-amount]');
+                    if (currentBidElement) {
+                        currentBidElement.textContent = data.bidAmount;
+                        // Add visual effect
+                        currentBidElement.style.color = '#e74c3c';
+                        currentBidElement.style.fontWeight = 'bold';
+                        setTimeout(() => {
+                            currentBidElement.style.color = '';
+                            currentBidElement.style.fontWeight = '';
+                        }, 2000);
+                    }
+                    
+                    // Update current bidder
+                    const currentBidderElement = card.querySelector('[data-bidder]');
+                    if (currentBidderElement) {
+                        currentBidderElement.textContent = data.vendorName;
+                    }
+                    
+                    // Update bid input minimum value if it exists
+                    const bidInput = card.querySelector('input[type="number"]');
+                    if (bidInput) {
+                        bidInput.min = data.bidAmount + 1;
+                    }
+                }
+            });
+        });
+        
+        // Listen for auction ended
+        socket.on('auctionEnded', (data) => {
+            const auctionCards = document.querySelectorAll('.auction-card');
+            auctionCards.forEach(card => {
+                const joinBtn = card.querySelector('.join-btn');
+                if (joinBtn && joinBtn.href.includes(data.auctionId)) {
+                    // Update badge to show ended
+                    const badge = card.querySelector('.live-badge');
+                    if (badge) {
+                        badge.textContent = '🟢 ENDED';
+                        badge.className = 'ended-badge';
+                    }
+                    
+                    // Disable join button
+                    joinBtn.textContent = 'Auction Ended';
+                    joinBtn.style.backgroundColor = '#6c757d';
+                    joinBtn.style.pointerEvents = 'none';
+                }
+            });
         });
         
         // Update timers for auctions
@@ -439,8 +886,6 @@
                 const endTimeElement = card.querySelector(`#end-time-${auctionId}`);
                 const countdownElement = card.querySelector(`#countdown-${auctionId}`);
                 
-
-                
                 if (endTimeElement && countdownElement) {
                     try {
                         // Parse the end time from the text content
@@ -448,8 +893,6 @@
                         const endTime = new Date(endTimeText);
                         const now = new Date();
                         const timeLeft = endTime - now;
-                        
-
                         
                         if (isNaN(timeLeft) || timeLeft <= 0) {
                             countdownElement.textContent = 'Auction Ended';
@@ -460,6 +903,14 @@
                             if (badge) {
                                 badge.textContent = '🟢 ENDED';
                                 badge.className = 'ended-badge';
+                            }
+                            
+                            // Disable join button
+                            const joinBtn = card.querySelector('.join-btn');
+                            if (joinBtn) {
+                                joinBtn.textContent = 'Auction Ended';
+                                joinBtn.style.backgroundColor = '#6c757d';
+                                joinBtn.style.pointerEvents = 'none';
                             }
                         } else {
                             const hours = Math.floor(timeLeft / (1000 * 60 * 60));

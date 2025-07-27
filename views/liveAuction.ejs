@@ -2,15 +2,111 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Live Auction - <%= auction.name %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Auction - <%= auction.name %> - Bridgo</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
             background: #f7f9fa;
-            margin: 0;
-            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
+        
+        /* Navigation Bar */
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .nav-logo img {
+            height: 40px;
+            width: 40px;
+            margin-right: 10px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-menu li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+        
+        .nav-menu li a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .nav-menu li a.active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+        
+        /* Main Content */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
         .container {
             max-width: 1000px;
             margin: 20px auto;
@@ -19,16 +115,19 @@
             box-shadow: 0 2px 12px rgba(0,0,0,0.07);
             overflow: hidden;
         }
+        
         .header {
             background: linear-gradient(135deg, #e74c3c, #c0392b);
             color: white;
             padding: 20px;
             text-align: center;
         }
+        
         .header h1 {
             margin: 0;
             font-size: 2rem;
         }
+        
         .live-indicator {
             display: inline-block;
             background: #fff;
@@ -39,25 +138,30 @@
             margin-top: 10px;
             animation: pulse 2s infinite;
         }
+        
         @keyframes pulse {
             0% { opacity: 1; }
             50% { opacity: 0.7; }
             100% { opacity: 1; }
         }
+        
         .content {
             padding: 30px;
         }
+        
         .auction-info {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
             margin-bottom: 30px;
         }
+        
         .product-details {
             background: #f8f9fa;
             padding: 20px;
             border-radius: 8px;
         }
+        
         .product-image {
             width: 100%;
             height: 200px;
@@ -65,30 +169,36 @@
             border-radius: 8px;
             margin-bottom: 15px;
         }
+        
         .bid-section {
             background: #fff;
             border: 2px solid #e74c3c;
             border-radius: 8px;
             padding: 20px;
         }
+        
         .current-bid {
             text-align: center;
             margin-bottom: 20px;
         }
+        
         .current-bid h2 {
             color: #e74c3c;
             font-size: 2.5rem;
             margin: 0;
         }
+        
         .current-bidder {
             color: #666;
             font-size: 1.1rem;
         }
+        
         .bid-form {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
         }
+        
         .bid-form input {
             flex: 1;
             padding: 12px;
@@ -96,198 +206,402 @@
             border-radius: 6px;
             font-size: 1.1rem;
         }
+        
         .bid-form button {
             background: #e74c3c;
             color: white;
             border: none;
-            padding: 12px 25px;
+            padding: 12px 24px;
             border-radius: 6px;
             font-size: 1.1rem;
-            font-weight: bold;
             cursor: pointer;
             transition: background 0.2s;
         }
+        
         .bid-form button:hover {
             background: #c0392b;
         }
-        .bid-form button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
+        
+        .bid-history {
+            margin-top: 30px;
         }
-        .timer {
-            text-align: center;
-            font-size: 1.5rem;
-            color: #e74c3c;
-            font-weight: bold;
-            margin: 20px 0;
-        }
-        .bidders-list {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-        .bidders-list h3 {
-            margin-top: 0;
+        
+        .bid-history h3 {
             color: #333;
+            margin-bottom: 15px;
         }
-        .bidder-item {
+        
+        .bid-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
+            align-items: center;
         }
-        .bidder-item:last-child {
-            border-bottom: none;
+        
+        .bid-amount {
+            font-weight: bold;
+            color: #e74c3c;
         }
-        .error-message {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 10px;
-            border-radius: 4px;
-            margin: 10px 0;
-            display: none;
+        
+        .bid-time {
+            color: #666;
+            font-size: 0.9rem;
         }
-        .success-message {
-            background: #d4edda;
-            color: #155724;
-            padding: 10px;
-            border-radius: 4px;
-            margin: 10px 0;
-            display: none;
+        
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 1rem 0;
+            margin-top: auto;
         }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-section {
+            text-align: center;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .footer-section a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.3rem;
+            transition: color 0.3s;
+        }
+        
+        .footer-section a:hover {
+            color: #3498db;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding: 0.5rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 1rem;
+        }
+        
+        .footer-bottom p {
+            color: #bdc3c7;
+            font-size: 0.9rem;
+        }
+        
+        /* Mobile Responsive */
         @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-menu {
+                flex-direction: column;
+                gap: 1rem;
+                width: 100%;
+            }
+            
+            .nav-menu li {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .nav-menu li a {
+                display: block;
+                padding: 0.8rem;
+            }
+            
+            .hamburger {
+                display: flex;
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+            
+            .nav-menu.active {
+                display: flex;
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 8px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
             .auction-info {
                 grid-template-columns: 1fr;
+                gap: 20px;
             }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .current-bid h2 {
+                font-size: 2rem;
+            }
+            
             .bid-form {
                 flex-direction: column;
+            }
+            
+            .footer-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .content {
+                padding: 15px;
+            }
+            
+            .header {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.3rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1><%= auction.name %></h1>
-            <div class="live-indicator">🔴 LIVE AUCTION</div>
-        </div>
-        
-        <div class="content">
-            <div class="auction-info">
-                <div class="product-details">
-                    <h3>Product Details</h3>
-                    <% if (auction.image) { %>
-                        <img class="product-image" src="<%= auction.image %>" alt="<%= auction.name %>">
-                    <% } else { %>
-                        <div class="product-image" style="background: #eee; display: flex; align-items: center; justify-content: center; color: #999;">No Image</div>
-                    <% } %>
-                    <p><strong>Base Price:</strong> ₹<%= auction.basePrice %></p>
-                    <p><strong>Quantity:</strong> <%= auction.quantity %></p>
-                    <p><strong>Location:</strong> <%= auction.area %>, <%= auction.city %>, <%= auction.state %></p>
-                    <p><strong>Supplier:</strong> <%= auction.supplierName %></p>
-                </div>
-                
-                <div class="bid-section">
-                    <div class="current-bid">
-                        <h2 id="current-bid-display">₹<%= auction.currentBid || auction.basePrice %></h2>
-                        <div class="current-bidder" id="current-bidder-display">
-                            <% if (auction.currentBidder) { %>
-                                Current Bidder: <%= auction.currentBidder %>
-                            <% } else { %>
-                                No bids yet
-                            <% } %>
-                        </div>
-                    </div>
-                    
-                    <div class="timer" id="auction-timer">
-                        Time Remaining: <span id="time-remaining">Loading...</span>
-                    </div>
-                    
-                    <div style="margin-bottom: 20px;">
-                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #007bff; margin-bottom: 15px;">
-                            <h4 style="margin: 0; color: #495057; font-size: 1.1rem;">Vendor: <span style="font-weight: 600; color: #007bff;"><%= vendor ? vendor.name : 'Unknown' %></span></h4>
-                        </div>
-                    </div>
-                    
-                    <form class="bid-form" id="bid-form">
-                        <div style="margin-bottom: 15px;">
-                            <input type="number" id="bid-amount" placeholder="Enter your bid amount" min="<%= (auction.currentBid || auction.basePrice) + 1 %>" step="1" required style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; margin-bottom: 12px;">
-                            <button type="submit" id="bid-button" style="width: 100%; padding: 15px; background: #e74c3c; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: background 0.2s;">Place Bid</button>
-                        </div>
-                    </form>
-                    
-                    <div class="error-message" id="error-message"></div>
-                    <div class="success-message" id="success-message"></div>
-                </div>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="/" class="nav-logo">
+                    <img src="/images/logo.png" alt="Bridgo Logo">
+                </a>
             </div>
-            
-            <div class="bidders-list">
-                <h3>Recent Bidders</h3>
-                <div id="bidders-container">
-                    <% if (auction.bidders && auction.bidders.length > 0) { %>
-                        <% auction.bidders.slice(-10).reverse().forEach(function(bidder) { %>
-                            <div class="bidder-item" style="background: #f8f9fa; padding: 10px; border-radius: 6px; margin-bottom: 8px; border-left: 4px solid #28a745;">
-                                <span style="font-weight: 600; color: #495057;"><%= bidder.vendorName %></span>
-                            </div>
-                        <% }); %>
-                    <% } else { %>
-                        <p style="color: #666; font-style: italic;">No bids yet</p>
-                    <% } %>
-                </div>
+            <div class="nav-right">
+                <ul class="nav-menu">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/vendor/login">Vendor</a></li>
+                    <li><a href="/supplier/login">Supplier</a></li>
+                </ul>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
         </div>
-    </div>
+    </nav>
 
-    <!-- Socket.IO Client -->
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <div class="header">
+                <h1><%= auction.name %></h1>
+                <div class="live-indicator">🔴 LIVE AUCTION</div>
+            </div>
+            <div class="content">
+                <div class="auction-info">
+                    <div class="product-details">
+                        <h3>Product Details</h3>
+                        <% if (auction.image) { %>
+                            <img src="<%= auction.image %>" alt="<%= auction.name %>" class="product-image">
+                        <% } %>
+                        <p><strong>Supplier:</strong> <%= auction.supplierName %></p>
+                        <p><strong>Base Price:</strong> ₹<%= auction.basePrice %></p>
+                        <p><strong>Quantity:</strong> <%= auction.quantity %></p>
+                        <p><strong>Location:</strong> <%= auction.area %>, <%= auction.city %>, <%= auction.state %></p>
+                    </div>
+                    <div class="bid-section">
+                        <div class="current-bid">
+                            <h2>₹<span id="current-bid"><%= auction.currentBid || auction.basePrice %></span></h2>
+                            <p class="current-bidder">Current Bid: <span id="current-bidder"><%= auction.currentBidder || 'No bids yet' %></span></p>
+                        </div>
+                        <form class="bid-form" id="bidForm">
+                            <input type="number" id="bidAmount" placeholder="Enter your bid amount" min="<%= (auction.currentBid || auction.basePrice) + 1 %>" required>
+                            <button type="submit">Place Bid</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="bid-history">
+                    <h3>Bid History</h3>
+                    <div id="bidHistory">
+                        <% if (auction.bidders && auction.bidders.length > 0) { %>
+                            <% auction.bidders.slice().reverse().forEach(bid => { %>
+                                <div class="bid-item">
+                                    <span class="bid-amount">₹<%= bid.bidAmount %></span>
+                                    <span class="bid-time"><%= new Date(bid.bidTime).toLocaleString() %></span>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <p>No bids yet</p>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="/">Home</a>
+                <a href="/vendor/login">Vendor Login</a>
+                <a href="/supplier/login">Supplier Login</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Team Global. All rights reserved.</p>
+        </div>
+    </footer>
+
     <script src="/socket.io/socket.io.js"></script>
     <script>
+        // Mobile menu toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+        
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+        
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // Socket.IO for real-time bidding
         const socket = io();
         const auctionId = '<%= auction._id %>';
-        const auctionEndTime = new Date('<%= auction.auctionEnd %>');
+        const vendor = {
+            vendorId: '<%= vendor ? vendor.vendorId : "" %>',
+            vendorName: '<%= vendor ? vendor.name : "" %>',
+            vendorPhone: '<%= vendor ? vendor.phone : "" %>',
+            vendorEmail: '<%= vendor ? vendor.email : "" %>',
+            vendorAddress: '<%= vendor ? ([vendor.address, vendor.area, vendor.city, vendor.state].filter(Boolean).join(", ") || "") : "" %>'
+        };
         
-        // Join the auction room
+        // Join auction room
         socket.emit('joinAuction', auctionId);
         
-        // Update timer
-        function updateTimer() {
-            const now = new Date();
-            const timeLeft = auctionEndTime - now;
-            
-            if (timeLeft <= 0) {
-                document.getElementById('time-remaining').textContent = 'Auction Ended';
-                document.getElementById('bid-button').disabled = true;
-                document.getElementById('bid-amount').disabled = true;
-                return;
-            }
-            
-            const hours = Math.floor(timeLeft / (1000 * 60 * 60));
-            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-            
-            document.getElementById('time-remaining').textContent = 
-                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
+        // Connection status
+        socket.on('connect', () => {
+            console.log('Connected to Socket.IO server');
+        });
         
-        // Update timer every second
-        setInterval(updateTimer, 1000);
-        updateTimer();
+        socket.on('disconnect', () => {
+            console.log('Disconnected from Socket.IO server');
+        });
+        
+        socket.on('connect_error', (error) => {
+            console.error('Socket.IO connection error:', error);
+        });
+        
+        // Listen for new bids
+        socket.on('newBid', (data) => {
+            console.log('Received new bid:', data);
+            if (data.auctionId === auctionId) {
+                // Update current bid display
+                const currentBidElement = document.getElementById('current-bid');
+                const currentBidderElement = document.getElementById('current-bidder');
+                
+                if (currentBidElement) {
+                    currentBidElement.textContent = data.bidAmount;
+                    // Add visual effect for new bid
+                    currentBidElement.style.color = '#e74c3c';
+                    currentBidElement.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        currentBidElement.style.color = '';
+                        currentBidElement.style.transform = '';
+                    }, 1000);
+                }
+                
+                if (currentBidderElement) {
+                    currentBidderElement.textContent = data.vendorName;
+                }
+                
+                // Update bid input minimum value
+                const bidInput = document.getElementById('bidAmount');
+                if (bidInput) {
+                    bidInput.min = data.bidAmount + 1;
+                }
+                
+                // Add to bid history
+                const bidHistory = document.getElementById('bidHistory');
+                if (bidHistory) {
+                    const bidItem = document.createElement('div');
+                    bidItem.className = 'bid-item';
+                    bidItem.innerHTML = `
+                        <span class="bid-amount">₹${data.bidAmount}</span>
+                        <span class="bid-time">${new Date().toLocaleString()}</span>
+                    `;
+                    bidHistory.insertBefore(bidItem, bidHistory.firstChild);
+                    
+                    // Keep only last 10 bids
+                    const bidItems = bidHistory.querySelectorAll('.bid-item');
+                    if (bidItems.length > 10) {
+                        bidItems[bidItems.length - 1].remove();
+                    }
+                }
+                
+                // Show notification
+                showNotification(`New bid: ₹${data.bidAmount} by ${data.vendorName}`, 'success');
+            }
+        });
+        
+        // Listen for auction ended
+        socket.on('auctionEnded', (data) => {
+            if (data.auctionId === auctionId) {
+                showNotification('Auction has ended!', 'warning');
+                // Disable bid form
+                const bidForm = document.getElementById('bidForm');
+                const bidInput = document.getElementById('bidAmount');
+                const bidButton = bidForm.querySelector('button[type="submit"]');
+                
+                if (bidForm) bidForm.style.display = 'none';
+                if (bidInput) bidInput.disabled = true;
+                if (bidButton) bidButton.disabled = true;
+            }
+        });
         
         // Handle bid form submission
-        document.getElementById('bid-form').addEventListener('submit', async (e) => {
+        document.getElementById('bidForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const bidAmount = parseInt(document.getElementById('bid-amount').value);
-            const currentBid = parseInt(document.getElementById('current-bid-display').textContent.replace('₹', ''));
+            const bidAmount = parseInt(document.getElementById('bidAmount').value);
+            const currentBid = parseInt(document.getElementById('current-bid').textContent);
             
             if (bidAmount <= currentBid) {
-                showError('Your bid must be higher than the current bid');
+                showNotification('Bid must be higher than current bid', 'error');
                 return;
             }
             
             try {
-                const vendorName = '<%= vendor ? vendor.name : "Unknown" %>';
-                
                 const response = await fetch('/supplier/place-bid', {
                     method: 'POST',
                     headers: {
@@ -295,11 +609,11 @@
                     },
                     body: JSON.stringify({
                         auctionId: auctionId,
-                        vendorId: '<%= vendor ? vendor.vendorId : "unknown" %>',
-                        vendorName: vendorName,
-                        vendorPhone: '<%= vendor ? vendor.phone : "" %>',
-                        vendorEmail: '<%= vendor ? vendor.email : "" %>',
-                        vendorAddress: '<%= vendor ? ([vendor.address, vendor.area, vendor.city, vendor.state].filter(Boolean).join(", ") || "") : "" %>',
+                        vendorId: vendor.vendorId,
+                        vendorName: vendor.vendorName,
+                        vendorPhone: vendor.vendorPhone,
+                        vendorEmail: vendor.vendorEmail,
+                        vendorAddress: vendor.vendorAddress,
                         bidAmount: bidAmount
                     })
                 });
@@ -307,82 +621,70 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    showSuccess('Bid placed successfully!');
-                    document.getElementById('bid-amount').value = '';
-                    document.getElementById('bid-amount').min = bidAmount + 1;
+                    document.getElementById('bidAmount').value = '';
+                    showNotification('Bid placed successfully!', 'success');
                 } else {
-                    showError(result.error || 'Failed to place bid');
+                    showNotification(result.error || 'Failed to place bid', 'error');
                 }
             } catch (error) {
-                showError('Error placing bid: ' + error.message);
+                showNotification('Error placing bid', 'error');
             }
         });
         
-        // Listen for new bids from other users
-        socket.on('newBid', (data) => {
-            if (data.auctionId === auctionId) {
-                document.getElementById('current-bid-display').textContent = '₹' + data.bidAmount;
-                document.getElementById('current-bidder-display').textContent = 'Current Bidder: ' + data.vendorName;
-                document.getElementById('bid-amount').min = data.bidAmount + 1;
-                
-                // Add visual effect
-                const bidDisplay = document.getElementById('current-bid-display');
-                bidDisplay.style.color = '#e74c3c';
-                bidDisplay.style.transform = 'scale(1.1)';
-                setTimeout(() => {
-                    bidDisplay.style.color = '';
-                    bidDisplay.style.transform = '';
-                }, 1000);
-                
-                // Add to bidders list
-                addBidderToList(data.vendorName, data.bidAmount);
-            }
-        });
-        
-        // Listen for auction ended
-        socket.on('auctionEnded', (data) => {
-            if (data.auctionId === auctionId) {
-                document.getElementById('time-remaining').textContent = 'Auction Ended';
-                document.getElementById('bid-button').disabled = true;
-                document.getElementById('bid-amount').disabled = true;
-                showSuccess('Auction has ended!');
-            }
-        });
-        
-        function showError(message) {
-            const errorDiv = document.getElementById('error-message');
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
+        // Notification function
+        function showNotification(message, type = 'info') {
+            // Remove existing notifications
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(notification => notification.remove());
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+                max-width: 300px;
+            `;
+            
+            // Set background color based on type
+            const colors = {
+                success: '#28a745',
+                error: '#dc3545',
+                warning: '#ffc107',
+                info: '#17a2b8'
+            };
+            notification.style.backgroundColor = colors[type] || colors.info;
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
             setTimeout(() => {
-                errorDiv.style.display = 'none';
-            }, 5000);
-        }
-        
-        function showSuccess(message) {
-            const successDiv = document.getElementById('success-message');
-            successDiv.textContent = message;
-            successDiv.style.display = 'block';
-            setTimeout(() => {
-                successDiv.style.display = 'none';
+                notification.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => notification.remove(), 300);
             }, 3000);
         }
         
-        function addBidderToList(vendorName, bidAmount) {
-            const container = document.getElementById('bidders-container');
-            const bidderItem = document.createElement('div');
-            bidderItem.className = 'bidder-item';
-            bidderItem.style = 'background: #f8f9fa; padding: 10px; border-radius: 6px; margin-bottom: 8px; border-left: 4px solid #28a745;';
-            bidderItem.innerHTML = `
-                <span style="font-weight: 600; color: #495057;">${vendorName}</span>
-            `;
-            container.appendChild(bidderItem);
-            
-            // Keep only last 10 bids
-            const items = container.querySelectorAll('.bidder-item');
-            if (items.length > 10) {
-                items[0].remove();
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
             }
-        }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html> 
