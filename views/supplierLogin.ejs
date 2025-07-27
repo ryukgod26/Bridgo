@@ -2,43 +2,146 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Supplier Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Login - Bridgo</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            background: #f7f7f7;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f8fb;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Navigation Bar */
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .nav-logo img {
+            height: 40px;
+            width: 40px;
+            margin-right: 10px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-menu li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+        
+        .nav-menu li a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .nav-menu li a.active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+        
+        /* Main Content */
+        main {
+            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            padding: 2rem 1rem;
         }
+        
         .login-container {
             background: #fff;
             padding: 2rem 2.5rem;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             width: 350px;
+            max-width: 100%;
         }
+        
         .login-container h2 {
             text-align: center;
             margin-bottom: 1.5rem;
             color: #218838;
         }
+        
         .form-group {
             margin-bottom: 1.2rem;
         }
+        
         .form-group label {
             display: block;
             margin-bottom: 0.4rem;
             font-weight: 500;
-            color:black;
+            color: black;
         }
+        
         .form-group input {
             width: 100%;
             padding: 0.5rem;
             border: 1px solid #b2dfb2;
             border-radius: 4px;
         }
+        
         .login-btn {
             width: 100%;
             padding: 0.6rem;
@@ -51,9 +154,11 @@
             margin-top: 0.5rem;
             transition: background 0.2s;
         }
+        
         .login-btn:hover {
             background: #218838;
         }
+        
         .register-link {
             display: block;
             text-align: center;
@@ -62,27 +167,196 @@
             text-decoration: none;
             transition: color 0.2s;
         }
+        
         .register-link:hover {
             text-decoration: underline;
             color: #218838;
         }
+        
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 1rem 0;
+            margin-top: auto;
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-section {
+            text-align: center;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .footer-section a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.3rem;
+            transition: color 0.3s;
+        }
+        
+        .footer-section a:hover {
+            color: #3498db;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding: 0.5rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 1rem;
+        }
+        
+        .footer-bottom p {
+            color: #bdc3c7;
+            font-size: 0.9rem;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-menu {
+                flex-direction: column;
+                gap: 1rem;
+                width: 100%;
+            }
+            
+            .nav-menu li {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .nav-menu li a {
+                display: block;
+                padding: 0.8rem;
+            }
+            
+            .hamburger {
+                display: flex;
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+            
+            .nav-menu.active {
+                display: flex;
+            }
+            
+            .login-container {
+                width: 90%;
+                padding: 1.5rem;
+            }
+            
+            .footer-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                width: 95%;
+                padding: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h2>Supplier Login</h2>
-        <form action="/supplier/login" method="POST">
-            <div class="form-group">
-                <label for="loginId">Login ID</label>
-                <input type="text" id="loginId" name="loginId" required>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="/" class="nav-logo">
+                    <img src="/images/logo.png" alt="Bridgo Logo">
+                </a>
             </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+            <div class="nav-right">
+                <ul class="nav-menu">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/vendor/login">Vendor</a></li>
+                    <li><a href="/supplier/login" class="active">Supplier</a></li>
+                </ul>
             </div>
-            <button class="login-btn" type="submit">Login</button>
-        </form>
-        <a class="register-link" href="/supplier/register">Don't have an account? Register here</a>
-    </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <div class="login-container">
+            <h2>Supplier Login</h2>
+            <form action="/supplier/login" method="POST">
+                <div class="form-group">
+                    <label for="loginId">Login ID</label>
+                    <input type="text" id="loginId" name="loginId" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button class="login-btn" type="submit">Login</button>
+            </form>
+            <a class="register-link" href="/supplier/register">Don't have an account? Register here</a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="/">Home</a>
+                <a href="/vendor/login">Vendor Login</a>
+                <a href="/supplier/login">Supplier Login</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Team Global. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+        
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+        
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+            });
+        });
+    </script>
 </body>
 </html>
