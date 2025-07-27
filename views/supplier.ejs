@@ -334,6 +334,65 @@
                 font-size: 1.2rem;
             }
         }
+        .dark-mode-toggle {
+            background: none;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            font-size: 1.7rem;
+            margin-left: 18px;
+            color: #fff;
+            border-radius: 50%;
+            transition: background 0.2s, color 0.2s;
+            padding: 6px 10px;
+        }
+        .dark-mode-toggle:hover {
+            background: rgba(255,255,255,0.15);
+            color: #ffe066;
+        }
+        body.dark-mode {
+            background: #181c24;
+            color: #f1f1f1;
+        }
+        body.dark-mode .dashboard-container {
+            background: #232a36;
+            color: #f1f1f1;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+        }
+        body.dark-mode .dashboard-header h1 {
+            color: #ffe066;
+        }
+        body.dark-mode .dashboard-actions a,
+        body.dark-mode .dashboard-actions a.organise {
+            background: #34495e;
+            color: #ffe066;
+        }
+        body.dark-mode .dashboard-actions a:hover {
+            background: #232a36;
+            color: #fff;
+        }
+        body.dark-mode .supplier-info {
+            background: #232a36;
+            color: #f1f1f1;
+        }
+        body.dark-mode .footer {
+            background: linear-gradient(135deg, #181c24 0%, #232a36 100%);
+            color: #ffe066;
+        }
+        body.dark-mode .footer-section a {
+            color: #ffe066;
+        }
+        body.dark-mode .footer-section a:hover {
+            color: #fff;
+        }
+        body.dark-mode .logout-btn {
+            background: #ffe066;
+            color: #232a36;
+        }
+        body.dark-mode .logout-btn:hover {
+            background: #ffd700;
+            color: #181c24;
+        }
     </style>
 </head>
 <body>
@@ -351,6 +410,9 @@
                     <li><a href="/vendor/login">Vendor</a></li>
                     <li><a href="/supplier/login" class="active">Supplier</a></li>
                 </ul>
+                <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode">
+                    <span id="darkModeIcon">🌙</span>
+                </button>
             </div>
             <div class="hamburger">
                 <span></span>
@@ -422,16 +484,33 @@
         // Mobile menu toggle
         const hamburger = document.querySelector('.hamburger');
         const navMenu = document.querySelector('.nav-menu');
-        
         hamburger.addEventListener('click', () => {
             navMenu.classList.toggle('active');
         });
-        
-        // Close mobile menu when clicking on a link
         document.querySelectorAll('.nav-menu a').forEach(link => {
             link.addEventListener('click', () => {
                 navMenu.classList.remove('active');
             });
+        });
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkModeIcon = document.getElementById('darkModeIcon');
+        function setDarkMode(enabled) {
+            if (enabled) {
+                document.body.classList.add('dark-mode');
+                darkModeIcon.textContent = '☀️';
+            } else {
+                document.body.classList.remove('dark-mode');
+                darkModeIcon.textContent = '🌙';
+            }
+        }
+        // Load preference
+        const darkPref = localStorage.getItem('darkMode') === 'true';
+        setDarkMode(darkPref);
+        darkModeToggle.addEventListener('click', () => {
+            const enabled = !document.body.classList.contains('dark-mode');
+            setDarkMode(enabled);
+            localStorage.setItem('darkMode', enabled);
         });
     </script>
 </body>
