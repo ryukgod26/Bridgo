@@ -537,7 +537,6 @@
             <% } %>
         </div>
     </div>
-    
     <script>
         // Dark mode toggle
         const darkModeToggle = document.getElementById('darkModeToggle');
@@ -551,7 +550,6 @@
                 darkModeIcon.textContent = '🌙';
             }
         }
-        // Load preference
         const darkPref = localStorage.getItem('darkMode') === 'true';
         setDarkMode(darkPref);
         darkModeToggle.addEventListener('click', () => {

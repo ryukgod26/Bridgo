@@ -107,7 +107,7 @@
         }
         
         .container {
-            max-width: 1200px;
+            width:80vw;
             margin: 20px auto;
             padding: 0 20px;
         }
@@ -228,12 +228,13 @@
         
         .auctions-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 30px;
             margin-bottom: 30px;
         }
         
         .auction-card {
+            height:fit-content;
             background: white;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
@@ -738,7 +739,7 @@
                                             <% if (auction.auctionEnd) { %>
                                                 <div class="timer" id="timer-<%= auction._id %>">
                                                     <span id="end-time-<%= auction._id %>" style="display: none;"><%= auction.auctionEnd.toISOString() %></span>
-                                                    <span id="countdown-<%= auction._id %>">⏰ Loading timer...</span>
+                                                    <span id="countdown-<%= auction._id %>">ENDED</span>
                                                 </div>
                                             <% } %>
                                         </div>
