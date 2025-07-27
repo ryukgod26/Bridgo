@@ -173,24 +173,24 @@ router.get("/live-auction/:auctionId", async (req, res) => {
     }
 });
 
-// Test route to check all auctions (for debugging)
-router.get("/test-auctions", async (req, res) => {
-    try {
-        const allAuctions = await Stock.find({});
-        res.json({
-            totalAuctions: allAuctions.length,
-            auctions: allAuctions.map(auction => ({
-                id: auction._id,
-                name: auction.name,
-                isLive: auction.isLive,
-                supplierName: auction.supplierName,
-                supplierId: auction.supplierId
-            }))
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+// // Test route to check all auctions (for debugging)
+// router.get("/test-auctions", async (req, res) => {
+//     try {
+//         const allAuctions = await Stock.find({});
+//         res.json({
+//             totalAuctions: allAuctions.length,
+//             auctions: allAuctions.map(auction => ({
+//                 id: auction._id,
+//                 name: auction.name,
+//                 isLive: auction.isLive,
+//                 supplierName: auction.supplierName,
+//                 supplierId: auction.supplierId
+//             }))
+//         });
+//     } catch (err) {
+//         res.status(500).json({ error: err.message });
+//     }
+// });
 
 // Route for joining auctions (general auction page)
 router.get("/auction/join", async (req, res) => {
@@ -389,30 +389,30 @@ router.get("/my-requirements", async (req, res) => {
     }
 });
 
-// Debug route to check vendor data
-router.get("/debug-vendor/:vendorId", async (req, res) => {
-    try {
-        const { vendorId } = req.params;
-        const vendor = await Vendor.findOne({ vendorId });
+// // Debug route to check vendor data
+// router.get("/debug-vendor/:vendorId", async (req, res) => {
+//     try {
+//         const { vendorId } = req.params;
+//         const vendor = await Vendor.findOne({ vendorId });
         
-        if (!vendor) {
-            return res.json({ error: "Vendor not found" });
-        }
+//         if (!vendor) {
+//             return res.json({ error: "Vendor not found" });
+//         }
         
-        res.json({
-            vendorId: vendor.vendorId,
-            name: vendor.name,
-            phone: vendor.phone,
-            email: vendor.email,
-            address: vendor.address,
-            area: vendor.area,
-            city: vendor.city,
-            state: vendor.state
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+//         res.json({
+//             vendorId: vendor.vendorId,
+//             name: vendor.name,
+//             phone: vendor.phone,
+//             email: vendor.email,
+//             address: vendor.address,
+//             area: vendor.area,
+//             city: vendor.city,
+//             state: vendor.state
+//         });
+//     } catch (err) {
+//         res.status(500).json({ error: err.message });
+//     }
+// });
 
 // ========== VENDOR AUCTION ROUTES ==========
 

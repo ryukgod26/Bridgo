@@ -555,6 +555,13 @@
         body.dark-mode .footer-section a:hover {
             color: #fff;
         }
+        .status-pending {
+            color: #ffc107;
+        }
+        .status-approved {
+        color: #28a745;
+        }
+
     </style>
 </head>
 <body>
@@ -619,7 +626,9 @@
                                     </div>
                                     <div class="detail-item">
                                         <span class="detail-label">Status:</span>
-                                        <span class="detail-value" style="color: <%= requirement.status === 'pending' ? '#ffc107' : '#28a745' %>;">
+                                            <span class="detail-value <%= requirement.status === 'pending' ? 'status-pending' : 'status-approved' %>">
+                                                <%= requirement.status %>
+                                            </span>
                                             <%= requirement.status.charAt(0).toUpperCase() + requirement.status.slice(1) %>
                                         </span>
                                     </div>
