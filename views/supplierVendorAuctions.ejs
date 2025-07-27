@@ -285,6 +285,120 @@
             border-left: 4px solid #dc3545;
         }
         
+        .dashboard-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(90deg, #2e86de 0%, #6dd5ed 100%);
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 28px;
+            font-size: 1.08rem;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(46,134,222,0.10);
+            text-decoration: none;
+            margin-bottom: 24px;
+            margin-top: 8px;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+            cursor: pointer;
+        }
+        .dashboard-btn:hover {
+            background: linear-gradient(90deg, #1b4f72 0%, #2980b9 100%);
+            box-shadow: 0 4px 16px rgba(46,134,222,0.18);
+            transform: translateY(-2px) scale(1.03);
+            color: #fff;
+        }
+        
+        .dark-mode-toggle {
+            background: none;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            font-size: 1.7rem;
+            margin-left: 18px;
+            color: #2e86de;
+            border-radius: 50%;
+            transition: background 0.2s, color 0.2s;
+            padding: 6px 10px;
+        }
+        .dark-mode-toggle:hover {
+            background: rgba(46,134,222,0.10);
+            color: #ffe066;
+        }
+        body.dark-mode {
+            background: #181c24;
+            color: #f1f1f1;
+        }
+        body.dark-mode .container {
+            background: #232a36 !important;
+            color: #f1f1f1 !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.35) !important;
+        }
+        body.dark-mode .header {
+            background: linear-gradient(135deg, #232a36, #2e86de);
+            color: #ffe066;
+        }
+        body.dark-mode .auctions-list {
+            background: #232a36;
+            color: #f1f1f1;
+        }
+        body.dark-mode .auction-card {
+            background: #181c24 !important;
+            color: #f1f1f1 !important;
+            border: 2px solid #232a36 !important;
+            box-shadow: 0 4px 15px rgba(255,224,102,0.08) !important;
+        }
+        body.dark-mode .auction-title {
+            color: #ffe066;
+        }
+        body.dark-mode .dashboard-btn {
+            background: linear-gradient(90deg, #232a36 0%, #2e86de 100%);
+            color: #ffe066;
+        }
+        body.dark-mode .dashboard-btn:hover {
+            background: linear-gradient(90deg, #1b4f72 0%, #2980b9 100%);
+            color: #fff;
+        }
+        body.dark-mode .auction-body {
+            background: #232a36 !important;
+            color: #f1f1f1 !important;
+        }
+        body.dark-mode .info-box,
+        body.dark-mode .supplier-info,
+        body.dark-mode .vendor-info {
+            background: #232a36 !important;
+            color: #f1f1f1 !important;
+            border-left: 4px solid #ffe066 !important;
+        }
+        body.dark-mode .info-box h3,
+        body.dark-mode .supplier-info h4,
+        body.dark-mode .vendor-info h4 {
+            color: #ffe066 !important;
+        }
+        body.dark-mode .detail-label {
+            color: #ffe066 !important;
+        }
+        body.dark-mode .detail-value {
+            color: #f1f1f1 !important;
+        }
+        body.dark-mode .bid-info {
+            background: #181c24 !important;
+            color: #ffe066 !important;
+            border: 1px solid #34495e !important;
+        }
+        body.dark-mode .bid-info h4 {
+            color: #ffe066 !important;
+        }
+        body.dark-mode .current-bid {
+            background: #232a36 !important;
+            color: #28a745 !important;
+            border-radius: 6px;
+            padding: 8px 0;
+            display: inline-block;
+            font-weight: 700;
+        }
+        
         @media (max-width: 768px) {
             .auction-grid {
                 grid-template-columns: 1fr;
@@ -301,10 +415,15 @@
         <div class="header">
             <h1>🏢 Vendor Auctions</h1>
             <p>Browse vendor requirements and bid with the lowest amount to win</p>
+            <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode">
+                <span id="darkModeIcon">🌙</span>
+            </button>
         </div>
         
         <div class="content">
-            <a href="/supplier" class="back-btn">← Back to Dashboard</a>
+            <a href="/supplier" class="dashboard-btn">
+                <span style="font-size:1.3em;">🏠</span> Back to Dashboard
+            </a>
             
             <% if (typeof success !== 'undefined' && success) { %>
                 <div class="success-message">
@@ -440,6 +559,27 @@
         // Update timers every second
         setInterval(updateTimers, 1000);
         updateTimers();
+
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkModeIcon = document.getElementById('darkModeIcon');
+        function setDarkMode(enabled) {
+            if (enabled) {
+                document.body.classList.add('dark-mode');
+                darkModeIcon.textContent = '☀️';
+            } else {
+                document.body.classList.remove('dark-mode');
+                darkModeIcon.textContent = '🌙';
+            }
+        }
+        // Load preference
+        const darkPref = localStorage.getItem('darkMode') === 'true';
+        setDarkMode(darkPref);
+        darkModeToggle.addEventListener('click', () => {
+            const enabled = !document.body.classList.contains('dark-mode');
+            setDarkMode(enabled);
+            localStorage.setItem('darkMode', enabled);
+        });
     </script>
 </body>
 </html> 
