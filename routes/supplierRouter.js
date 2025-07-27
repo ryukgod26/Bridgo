@@ -155,7 +155,7 @@ router.post("/startAuction", async (req, res) => {
 
         // Mark auction as "live" and set start/end time
         const now = new Date();
-        const endTime = new Date(now.getTime() + parseInt(duration) * 60 * 60 * 1000); // duration in hours converted to milliseconds
+        const endTime = new Date(now.getTime() + parseInt(duration)  * 60 * 1000); // duration in hours converted to milliseconds
 
         auction.isLive = true;
         auction.auctionStart = now;
