@@ -461,11 +461,14 @@
                 </div>
             <% } else { %>
                 <div class="auction-grid">
+                    <% const now = new Date(); %>
                     <% auctions.forEach(function(auction) { %>
+                        <% const auctionEnd = auction.auctionEnd ? new Date(auction.auctionEnd) : null; %>
+                        <% const isEnded = auction.status === 'ended' || (auctionEnd && auctionEnd < now); %>
                         <div class="auction-card">
                             <div class="auction-header">
                                 <h3><%= auction.itemName %></h3>
-                                <div class="auction-status">🔴 LIVE</div>
+                                <div class="auction-status"><%= isEnded ? '🟢 ENDED' : '🔴 LIVE' %></div>
                             </div>
                             
                             <div class="auction-body">
@@ -480,7 +483,7 @@
                                     </div>
                                     <div class="detail-row">
                                         <span class="detail-label">End Time:</span>
-                                        <span class="detail-value"><%= new Date(auction.auctionEnd).toLocaleString() %></span>
+                                        <span class="detail-value"><%= auction.auctionEnd ? new Date(auction.auctionEnd).toLocaleString() : 'N/A' %></span>
                                     </div>
                                     <div class="detail-row">
                                         <span class="detail-label">Total Bids:</span>
@@ -509,13 +512,24 @@
                                     <% } %>
                                 </div>
                                 
-                                <div class="timer" id="timer-<%= auction._id %>">
-                                    Time Remaining: <span id="time-<%= auction._id %>">Loading...</span>
-                                </div>
+                                <% if (!isEnded) { %>
+                                    <div class="auction-actions">
+                                        <a href="/supplier/vendor-auction/<%= auction._id %>" class="action-btn btn-view">🔗 Join Auction</a>
+                                    </div>
+                                <% } %>
                                 
-                                <div class="auction-actions">
-                                    <a href="/supplier/vendor-auction/<%= auction._id %>" class="action-btn btn-view">👁️ View & Bid</a>
-                                </div>
+                                <% if (isEnded && auction.winner) { %>
+                                    <div class="winner-section" style="background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%); color: white; border-radius: 12px; padding: 18px; margin-top: 18px; text-align: center;">
+                                        <h4 style="margin-bottom: 10px; font-size: 1.2rem;">🏆 Auction Winner</h4>
+                                        <div class="winner-details" style="background: rgba(255,255,255,0.08); padding: 10px; border-radius: 8px; margin-top: 8px;">
+                                            <p><strong>Name:</strong> <%= auction.winner.name %></p>
+                                            <p><strong>Email:</strong> <%= auction.winner.email %></p>
+                                            <p><strong>City:</strong> <%= auction.winner.city %></p>
+                                            <p><strong>Mobile:</strong> <%= auction.winner.mobile %></p>
+                                            <p><strong>Winning Bid:</strong> ₹<%= auction.winner.bidAmount %></p>
+                                        </div>
+                                    </div>
+                                <% } %>
                             </div>
                         </div>
                     <% }); %>
@@ -525,41 +539,6 @@
     </div>
     
     <script>
-        // Update timers for all auctions
-        function updateTimers() {
-            <% auctions.forEach(function(auction) { %>
-                const auctionId = '<%= auction._id %>';
-                const endTime = new Date('<%= auction.auctionEnd %>');
-                const now = new Date();
-                const timeLeft = endTime - now;
-                
-                const timeElement = document.getElementById('time-' + auctionId);
-                if (timeElement) {
-                    if (timeLeft <= 0) {
-                        timeElement.textContent = 'Auction Ended';
-                        // Disable the view button
-                        const viewBtn = document.querySelector(`a[href="/supplier/vendor-auction/${auctionId}"]`);
-                        if (viewBtn) {
-                            viewBtn.className = 'action-btn btn-disabled';
-                            viewBtn.textContent = '⏰ Ended';
-                            viewBtn.style.pointerEvents = 'none';
-                        }
-                    } else {
-                        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
-                        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-                        
-                        timeElement.textContent = 
-                            `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                    }
-                }
-            <% }); %>
-        }
-        
-        // Update timers every second
-        setInterval(updateTimers, 1000);
-        updateTimers();
-
         // Dark mode toggle
         const darkModeToggle = document.getElementById('darkModeToggle');
         const darkModeIcon = document.getElementById('darkModeIcon');

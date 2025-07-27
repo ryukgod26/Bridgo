@@ -770,17 +770,16 @@
                                         <button class="action-btn btn-disabled" disabled>⏳ Pending</button>
                                     <% } %>
                                 </div>
-                                <% if (actualStatus === 'ended' && auction.winner && auction.winner.supplierName) { %>
+                                <% if (actualStatus === 'ended' && auction.winner) { %>
                                 <div class="winner-section" style="background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%); color: white; border-radius: 12px; padding: 18px; margin-top: 18px; text-align: center;">
                                     <h4 style="margin-bottom: 10px; font-size: 1.2rem;">🏆 Auction Winner</h4>
                                     <div class="winner-details" style="background: rgba(255,255,255,0.08); padding: 10px; border-radius: 8px; margin-top: 8px;">
-                                        <p><strong>Supplier:</strong> <%= auction.winner.supplierName %></p>
-                                        <p><strong>Winning Bid:</strong> ₹<%= auction.winner.winningBid %></p>
-                                        <p><strong>Phone:</strong> <%= auction.winner.supplierPhone %></p>
-                                        <p><strong>Email:</strong> <%= auction.winner.supplierEmail %></p>
-                                        <p><strong>Address:</strong> <%= auction.winner.supplierAddress %></p>
+                                        <p><strong>Name:</strong> <%= auction.winner.name %></p>
+                                        <p><strong>Email:</strong> <%= auction.winner.email %></p>
+                                        <p><strong>City:</strong> <%= auction.winner.city %></p>
+                                        <p><strong>Mobile:</strong> <%= auction.winner.mobile %></p>
+                                        <p><strong>Winning Bid:</strong> ₹<%= auction.winner.bidAmount %></p>
                                     </div>
-                                    <!-- No contact buttons -->
                                 </div>
                                 <% } %>
                             </div>

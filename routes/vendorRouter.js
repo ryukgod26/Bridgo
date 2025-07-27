@@ -353,6 +353,7 @@ router.post("/submit-requirement", async (req, res) => {
             vendorEmail: req.session.vendor.email,
             vendorAddress: finalAddress,
             itemName: itemName.toLowerCase().trim(),
+            city: req.session.vendor.city,
             requirement,
             quantity,
             other

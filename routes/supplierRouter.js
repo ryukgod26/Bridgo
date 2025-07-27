@@ -302,7 +302,27 @@ router.get("/auction/auctionsView", async (req, res) => {
         const auctions = await Stock.find({ supplierName: req.session.supplier.name });
         // Find all stock items for this supplier to populate the dropdown
         const stocks = await Stock.find({ supplierId: req.session.supplier.supplierId });
-        res.render("auctions", { auctions, stocks, supplier: req.session.supplier });
+
+        // For each auction, if it is ended and has bidders, attach winner details
+        const auctionsWithWinner = auctions.map(auction => {
+            let winner = null;
+            if ((auction.status === 'ended' || (auction.auctionEnd && auction.auctionEnd < new Date())) && auction.bidders && auction.bidders.length > 0) {
+                // Winner is the last/highest bidder (for normal auction)
+                // If you want the highest bid, sort by bidAmount descending
+                const sortedBidders = [...auction.bidders].sort((a, b) => b.bidAmount - a.bidAmount);
+                const winningBidder = sortedBidders[0];
+                winner = {
+                    name: winningBidder.vendorName,
+                    email: winningBidder.vendorEmail,
+                    city: winningBidder.vendorAddress, // If you store city separately, use that field
+                    mobile: winningBidder.vendorPhone,
+                    bidAmount: winningBidder.bidAmount
+                };
+            }
+            return { ...auction.toObject(), winner };
+        });
+
+        res.render("auctions", { auctions: auctionsWithWinner, stocks, supplier: req.session.supplier });
     } catch (err) {
         res.status(500).send("Error fetching auctions: " + err.message);
     }
@@ -343,102 +363,31 @@ router.get("/requirements", async (req, res) => {
         if (!req.session.supplier) {
             return res.redirect("/supplier/login");
         }
-        
+
         // Get all stock items for this supplier
-        const supplierStocks = await Stock.find({ 
-            supplierId: req.session.supplier.supplierId 
+        const supplierStocks = await Stock.find({
+            supplierId: req.session.supplier.supplierId
         });
-        
+
         // Extract stock names and convert to lowercase for matching
         const stockNames = supplierStocks.map(stock => stock.name.toLowerCase().trim());
-        
+
         // Find requirements that match supplier's stock items
         const allRequirements = await Requirement.find({ status: 'pending' }).sort({ createdAt: -1 });
-        
-        const matchingRequirements = allRequirements.filter(requirement => {
-            // Handle requirements that don't have itemName (old data)
-            if (!requirement.itemName) {
-                return false;
-            }
-            
-            // Check if vendor city matches supplier city
-            const vendorAddress = requirement.vendorAddress ? requirement.vendorAddress.toLowerCase() : '';
-            const supplierCity = req.session.supplier.city ? req.session.supplier.city.toLowerCase() : '';
-            
-            // Extract city from vendor address (look for common city patterns)
-            let vendorCity = '';
-            if (vendorAddress) {
-                const cityPatterns = [
-                    'mumbai', 'delhi', 'bangalore', 'chennai', 'kolkata', 'hyderabad', 'pune', 'ahmedabad', 'jaipur', 'lucknow',
-                    'jalandhar', 'amritsar', 'ludhiana', 'chandigarh', 'patiala', 'bathinda', 'moga', 'kapurthala', 'hoshiarpur',
-                    'firozpur', 'sangrur', 'muktsar', 'faridkot', 'barnala', 'mansa', 'fazilka', 'pathankot', 'gurdaspur', 'tarn taran'
-                ];
-                for (const pattern of cityPatterns) {
-                    if (vendorAddress.includes(pattern)) {
-                        vendorCity = pattern;
-                        break;
-                    }
-                }
-            }
-            
-            // Strict city matching - must be exact match
-            let cityMatches = false;
-            if (!supplierCity || !vendorCity) {
-                cityMatches = false; // Do not show if either city is missing
-            } else {
-                // Exact match only
-                cityMatches = (supplierCity === vendorCity);
-            }
-            
-            // Item name matching
-            const requirementItemName = requirement.itemName.toLowerCase().trim();
-            const itemMatches = stockNames.some(stockName => 
-                stockName.includes(requirementItemName) || 
-                requirementItemName.includes(stockName)
-            );
-            
-            // Both city and item must match
-            const finalMatch = cityMatches && itemMatches;
-            
-            return finalMatch;
-        });
-        
 
-        
-        // Function to check if cities are in same region/state
-        function checkSameRegion(city1, city2) {
-            // Punjab cities
-            const punjabCities = ['jalandhar', 'amritsar', 'ludhiana', 'chandigarh', 'patiala', 'bathinda', 'moga', 'kapurthala', 'hoshiarpur', 'firozpur', 'sangrur', 'muktsar', 'faridkot', 'barnala', 'mansa', 'fazilka', 'pathankot', 'gurdaspur', 'tarn taran'];
-            
-            // Maharashtra cities
-            const maharashtraCities = ['mumbai', 'pune', 'nagpur', 'thane', 'nashik', 'aurangabad', 'solapur', 'kolhapur', 'amravati', 'nanded'];
-            
-            // Delhi NCR
-            const delhiCities = ['delhi', 'gurgaon', 'noida', 'faridabad', 'ghaziabad', 'gurugram'];
-            
-            // Check if both cities are in same state/region
-            if (punjabCities.includes(city1) && punjabCities.includes(city2)) {
-                return true;
-            }
-            if (maharashtraCities.includes(city1) && maharashtraCities.includes(city2)) {
-                return true;
-            }
-            if (delhiCities.includes(city1) && delhiCities.includes(city2)) {
-                return true;
-            }
-            
-            // For other cities, only exact match
-            return city1 === city2;
-        }
-        
-        // Use session-based flash message
-        const success = req.session.successMessage;
-        req.session.successMessage = undefined;
-        res.render("supplierRequirements", { 
-            requirements: matchingRequirements, 
-            supplier: req.session.supplier,
-            success: success
+        // Match only item name, ignore city
+        const matchingRequirements = allRequirements.filter(requirement => {
+            if (!requirement.itemName) return false;
+            const requirementItemName = requirement.itemName.toLowerCase().trim();
+            return stockNames.some(stockName => stockName === requirementItemName);
         });
+
+        res.render("supplierRequirements", {
+            requirements: matchingRequirements,
+            supplier: req.session.supplier,
+            success: req.session.successMessage
+        });
+        req.session.successMessage = undefined;
     } catch (err) {
         res.status(500).send("Error fetching requirements: " + err.message);
     }
@@ -552,18 +501,34 @@ router.get("/vendor-auctions", async (req, res) => {
         if (!req.session.supplier) {
             return res.redirect("/supplier/login");
         }
-        
         // Update auction status before fetching
         await updateVendorAuctionStatus();
-        
-        const liveAuctions = await VendorAuction.find({ 
-            status: 'live',
-            isLive: true 
+
+        // Fetch both live and ended auctions for the supplier
+        const auctions = await VendorAuction.find({
+            // Optionally, you can filter by supplierId if needed
         }).sort({ auctionStart: -1 });
-        
-        res.render("supplierVendorAuctions", { 
-            auctions: liveAuctions, 
-            supplier: req.session.supplier 
+
+        // Attach winner details for ended auctions
+        const auctionsWithWinner = auctions.map(auction => {
+            let winner = null;
+            if ((auction.status === 'ended' || (auction.auctionEnd && auction.auctionEnd < new Date())) && auction.bidders && auction.bidders.length > 0) {
+                // Winner is the lowest bidder (reverse auction)
+                const winningBidder = auction.bidders.reduce((min, b) => b.bidAmount < min.bidAmount ? b : min, auction.bidders[0]);
+                winner = {
+                    name: winningBidder.supplierName,
+                    email: winningBidder.supplierEmail,
+                    city: winningBidder.supplierCity || '',
+                    mobile: winningBidder.supplierPhone,
+                    bidAmount: winningBidder.bidAmount
+                };
+            }
+            return { ...auction.toObject(), winner };
+        });
+
+        res.render("supplierVendorAuctions", {
+            auctions: auctionsWithWinner,
+            supplier: req.session.supplier
         });
     } catch (err) {
         res.status(500).send("Error fetching vendor auctions: " + err.message);

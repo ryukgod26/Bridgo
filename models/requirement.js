@@ -21,6 +21,9 @@ const requirementSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    city:{
+        type:String,
+    },
     itemName: {
         type: String,
         required: true
