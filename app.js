@@ -50,25 +50,24 @@ app.use("/",homeRouter);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
+
 }).then(() => console.log(""))
   .catch(err => console.error(err));
 
 // Socket.IO event handlers
 io.on('connection', (socket) => {
-  console.log('A user connected:', socket.id);
+  // console.log('A user connected:', socket.id);
 
   // Join auction room
   socket.on('joinAuction', (auctionId) => {
     socket.join(`auction_${auctionId}`);
-    console.log(`User ${socket.id} joined auction ${auctionId}`);
+    // console.log(`User ${socket.id} joined auction ${auctionId}`);
   });
 
   // Leave auction room
   socket.on('leaveAuction', (auctionId) => {
     socket.leave(`auction_${auctionId}`);
-    console.log(`User ${socket.id} left auction ${auctionId}`);
+    // console.log(`User ${socket.id} left auction ${auctionId}`);
   });
 
   // Handle new bids
@@ -97,11 +96,11 @@ io.on('connection', (socket) => {
       auctionId,
       timestamp: new Date()
     });
-    console.log(`Auction ${auctionId} ended`);
+    // console.log(`Auction ${auctionId} ended`);
   });
 
   socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
+    // console.log('User disconnected:', socket.id);
   });
 });
 
