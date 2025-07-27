@@ -421,10 +421,13 @@ router.get("/requirements", async (req, res) => {
             return city1 === city2;
         }
         
+        // Use session-based flash message
+        const success = req.session.successMessage;
+        req.session.successMessage = undefined;
         res.render("supplierRequirements", { 
             requirements: matchingRequirements, 
             supplier: req.session.supplier,
-            success: req.query.success
+            success: success
         });
     } catch (err) {
         res.status(500).send("Error fetching requirements: " + err.message);
@@ -458,7 +461,9 @@ router.post("/respond-requirement", async (req, res) => {
         
         await requirement.save();
         
-        res.redirect("/supplier/requirements?success=true");
+        // Set session-based flash message
+        req.session.successMessage = true;
+        res.redirect("/supplier/requirements");
     } catch (err) {
         res.status(500).send("Error responding to requirement: " + err.message);
     }
