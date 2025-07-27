@@ -403,6 +403,89 @@
                 padding: 15px;
             }
         }
+        
+        /* Dark Mode Styles */
+        .dark-mode-toggle {
+            background: none;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            font-size: 1.7rem;
+            margin-left: 18px;
+            color: #fff;
+            border-radius: 50%;
+            transition: background 0.2s, color 0.2s;
+            padding: 6px 10px;
+        }
+        
+        .dark-mode-toggle:hover {
+            background: rgba(255,255,255,0.15);
+            color: #ffe066;
+        }
+        
+        body.dark-mode {
+            background: #181c24;
+            color: #f1f1f1;
+        }
+        
+        body.dark-mode .container {
+            background: #232a36;
+            color: #f1f1f1;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+        }
+        
+        body.dark-mode .header h1 {
+            color: #ffe066;
+        }
+        
+        body.dark-mode .requirement-card {
+            background: #232a36;
+            color: #f1f1f1;
+            border: 1px solid #34495e;
+        }
+        
+        body.dark-mode .requirement-title {
+            color: #ffe066;
+        }
+        
+        body.dark-mode .requirement-info p {
+            color: #bdc3c7;
+        }
+        
+        body.dark-mode .requirement-info strong {
+            color: #ffe066;
+        }
+        
+        body.dark-mode .back-btn,
+        body.dark-mode .create-btn {
+            background: #34495e;
+            color: #ffe066;
+        }
+        
+        body.dark-mode .back-btn:hover,
+        body.dark-mode .create-btn:hover {
+            background: #232a36;
+            color: #fff;
+        }
+        
+        body.dark-mode .success-message {
+            background: #1a3a1a;
+            color: #4ade80;
+            border-left: 4px solid #4ade80;
+        }
+        
+        body.dark-mode .footer {
+            background: linear-gradient(135deg, #181c24 0%, #232a36 100%);
+            color: #ffe066;
+        }
+        
+        body.dark-mode .footer-section a {
+            color: #ffe066;
+        }
+        
+        body.dark-mode .footer-section a:hover {
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -420,6 +503,9 @@
                     <li><a href="/vendor/login" class="active">Vendor</a></li>
                     <li><a href="/supplier/login">Supplier</a></li>
                 </ul>
+                <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode">
+                    <span id="darkModeIcon">🌙</span>
+                </button>
             </div>
             <div class="hamburger">
                 <span></span>
@@ -539,6 +625,30 @@
             link.addEventListener('click', () => {
                 navMenu.classList.remove('active');
             });
+        });
+        
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkModeIcon = document.getElementById('darkModeIcon');
+        
+        function setDarkMode(enabled) {
+            if (enabled) {
+                document.body.classList.add('dark-mode');
+                darkModeIcon.textContent = '☀️';
+            } else {
+                document.body.classList.remove('dark-mode');
+                darkModeIcon.textContent = '🌙';
+            }
+        }
+        
+        // Load preference
+        const darkPref = localStorage.getItem('darkMode') === 'true';
+        setDarkMode(darkPref);
+        
+        darkModeToggle.addEventListener('click', () => {
+            const enabled = !document.body.classList.contains('dark-mode');
+            setDarkMode(enabled);
+            localStorage.setItem('darkMode', enabled);
         });
     </script>
 </body>

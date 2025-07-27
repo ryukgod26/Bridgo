@@ -286,7 +286,9 @@ router.get("/auction/auctionsView", async (req, res) => {
         const supplierId = req.session.supplier.supplierId;
         // Find all auctions (stocks) listed by this supplier
         const auctions = await Stock.find({ supplierName: req.session.supplier.name });
-        res.render("auctions", { auctions, supplier: req.session.supplier });
+        // Find all stock items for this supplier to populate the dropdown
+        const stocks = await Stock.find({ supplierId: req.session.supplier.supplierId });
+        res.render("auctions", { auctions, stocks, supplier: req.session.supplier });
     } catch (err) {
         res.status(500).send("Error fetching auctions: " + err.message);
     }
