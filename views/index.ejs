@@ -224,19 +224,30 @@
             }
             
             .nav-menu {
+                display: none;
                 flex-direction: column;
                 gap: 1rem;
                 width: 100%;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                position: absolute;
+                top: 60px;
+                left: 0;
+                z-index: 1001;
+                padding: 1rem 0;
             }
-            
+            .nav-menu.active {
+                display: flex;
+            }
             .nav-menu li {
                 width: 100%;
                 text-align: center;
             }
-            
             .nav-menu li a {
                 display: block;
                 padding: 0.8rem;
+            }
+            .navbar {
+                position: relative;
             }
             
             .hamburger {
@@ -244,14 +255,6 @@
                 position: absolute;
                 top: 1rem;
                 right: 1rem;
-            }
-            
-            .nav-menu {
-                display: none;
-            }
-            
-            .nav-menu.active {
-                display: flex;
             }
             
             .landing-container h1 {

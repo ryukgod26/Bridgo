@@ -565,41 +565,27 @@ router.get("/vendor-auction/:auctionId", async (req, res) => {
 // Route to place a bid on vendor auction
 router.post("/place-vendor-bid", async (req, res) => {
     try {
-        console.log('Bid request received:', req.body);
-        console.log('Session supplier:', req.session.supplier);
         
         if (!req.session.supplier) {
-            console.log('No supplier session found');
             return res.status(401).json({ success: false, error: "Not authenticated" });
         }
         
         const { auctionId, bidAmount } = req.body;
-        console.log('Auction ID:', auctionId);
-        console.log('Bid amount:', bidAmount);
         
         const auction = await VendorAuction.findById(auctionId);
-        console.log('Found auction:', auction ? 'Yes' : 'No');
         
         if (!auction) {
-            console.log('Auction not found');
             return res.status(404).json({ success: false, error: "Auction not found" });
         }
         
-        console.log('Auction status:', auction.status);
-        console.log('Auction isLive:', auction.isLive);
-        
         if (auction.status !== 'live' || !auction.isLive) {
-            console.log('Auction is not live');
             return res.status(400).json({ success: false, error: "Auction is not live" });
         }
         
         // Validate bid amount (must be lower than current lowest bid or base price)
         const currentLowest = auction.currentLowestBid || auction.basePrice;
-        console.log('Current lowest bid:', currentLowest);
-        console.log('New bid amount:', parseFloat(bidAmount));
         
         if (parseFloat(bidAmount) >= currentLowest) {
-            console.log('Bid amount too high');
             return res.status(400).json({ 
                 success: false, 
                 error: "Your bid must be lower than the current lowest bid" 
