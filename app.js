@@ -41,6 +41,7 @@ app.use(express.json());
 const homeRouter=require("./routes/homeRouter");
 const vendorRouter = require('./routes/vendorRouter');
 const supplierRouter= require('./routes/supplierRouter');
+const VendorAuction = require('./models/vendorAuction');
 
 
 
@@ -53,6 +54,52 @@ mongoose.connect(process.env.MONGO_URI, {
 
 }).then(() => console.log(""))
   .catch(err => console.error(err));
+
+// Function to update vendor auction status
+async function updateVendorAuctionStatus() {
+    try {
+        const now = new Date();
+        
+        // Update live auctions that have ended
+        const endedAuctions = await VendorAuction.updateMany(
+            {
+                status: 'live',
+                isLive: true,
+                auctionEnd: { $lte: now }
+            },
+            {
+                $set: {
+                    status: 'ended',
+                    isLive: false
+                }
+            }
+        );
+        
+        // Update pending auctions that should be live
+        const startedAuctions = await VendorAuction.updateMany(
+            {
+                status: 'pending',
+                auctionStart: { $lte: now },
+                auctionEnd: { $gt: now }
+            },
+            {
+                $set: {
+                    status: 'live',
+                    isLive: true
+                }
+            }
+        );
+        
+        if (endedAuctions.modifiedCount > 0 || startedAuctions.modifiedCount > 0) {
+            console.log(`Updated ${endedAuctions.modifiedCount} ended auctions and ${startedAuctions.modifiedCount} started auctions`);
+        }
+    } catch (err) {
+        console.error('Error updating vendor auction status:', err);
+    }
+}
+
+// Schedule auction status updates every minute
+setInterval(updateVendorAuctionStatus, 60000); // 60000ms = 1 minute
 
 // Socket.IO event handlers
 io.on('connection', (socket) => {

@@ -142,9 +142,34 @@ router.get("/join-auction/:auctionId", async (req, res) => {
         }
         
         // Render the live auction page with vendor session data
-        res.render("liveAuction", { auction, vendor: req.session.vendor });
+        res.render("liveAuction", { auction, vendor: req.session.vendor, supplier: null, isSupplierOwner: false });
     } catch (err) {
         res.status(500).send("Error joining auction: " + err.message);
+    }
+});
+
+// Vendor-specific live auction route
+router.get("/live-auction/:auctionId", async (req, res) => {
+    try {
+        if (!req.session.vendor) {
+            return res.redirect("/vendor/login");
+        }
+        
+        const { auctionId } = req.params;
+        const auction = await Stock.findById(auctionId);
+        
+        if (!auction) {
+            return res.status(404).send("Auction not found");
+        }
+        
+        if (!auction.isLive) {
+            return res.status(400).send("This auction is not live yet");
+        }
+        
+        // Render the live auction page with vendor session data
+        res.render("liveAuction", { auction, vendor: req.session.vendor, supplier: null, isSupplierOwner: false });
+    } catch (err) {
+        res.status(500).send("Error fetching auction: " + err.message);
     }
 });
 
@@ -248,6 +273,37 @@ router.get("/auction/join", async (req, res) => {
         });
     } catch (err) {
         res.status(500).send("Error fetching auctions: " + err.message);
+    }
+});
+
+// POST route to handle requirement submission from vendorJoinAuction.ejs
+router.post("/auction/join", async (req, res) => {
+    try {
+        if (!req.session.vendor) {
+            return res.redirect("/vendor/login");
+        }
+        const { itemName, requirement, quantity, other } = req.body;
+        if (!itemName || !requirement || !quantity) {
+            return res.redirect("/vendor/auction/join?error=missing_fields");
+        }
+        // Create new requirement for this vendor
+        const newRequirement = new Requirement({
+            vendorId: req.session.vendor.vendorId,
+            itemName,
+            requirement,
+            quantity,
+            other: other || '',
+            vendorName: req.session.vendor.name,
+            vendorCity: req.session.vendor.city,
+            vendorArea: req.session.vendor.area,
+            vendorPhone: req.session.vendor.phone,
+            vendorEmail: req.session.vendor.email,
+            vendorAddress: req.session.vendor.address
+        });
+        await newRequirement.save();
+        return res.redirect("/vendor/auction/join?success=true");
+    } catch (err) {
+        return res.redirect("/vendor/auction/join?error=" + encodeURIComponent(err.message));
     }
 });
 
@@ -428,12 +484,54 @@ router.post("/create-auction", async (req, res) => {
     }
 });
 
+// Function to update auction status based on time
+async function updateAuctionStatus() {
+    try {
+        const now = new Date();
+        
+        // Update live auctions that have ended
+        await VendorAuction.updateMany(
+            {
+                status: 'live',
+                isLive: true,
+                auctionEnd: { $lte: now }
+            },
+            {
+                $set: {
+                    status: 'ended',
+                    isLive: false
+                }
+            }
+        );
+        
+        // Update pending auctions that should be live
+        await VendorAuction.updateMany(
+            {
+                status: 'pending',
+                auctionStart: { $lte: now },
+                auctionEnd: { $gt: now }
+            },
+            {
+                $set: {
+                    status: 'live',
+                    isLive: true
+                }
+            }
+        );
+    } catch (err) {
+        console.error('Error updating auction status:', err);
+    }
+}
+
 // Route to view vendor's own auctions
 router.get("/my-auctions", async (req, res) => {
     try {
         if (!req.session.vendor) {
             return res.redirect("/vendor/login");
         }
+        
+        // Update auction status before fetching
+        await updateAuctionStatus();
         
         const auctions = await VendorAuction.find({ 
             vendorId: req.session.vendor.vendorId 
@@ -497,6 +595,10 @@ router.get("/live-vendor-auction/:auctionId", async (req, res) => {
         }
         
         const { auctionId } = req.params;
+        
+        // Update auction status before fetching
+        await updateAuctionStatus();
+        
         const auction = await VendorAuction.findById(auctionId);
         
         if (!auction) {
@@ -509,6 +611,16 @@ router.get("/live-vendor-auction/:auctionId", async (req, res) => {
         });
     } catch (err) {
         res.status(500).send("Error loading auction: " + err.message);
+    }
+});
+
+// Manual endpoint to update auction status (for testing)
+router.get("/update-auction-status", async (req, res) => {
+    try {
+        await updateAuctionStatus();
+        res.json({ success: true, message: "Auction status updated" });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
     }
 });
 

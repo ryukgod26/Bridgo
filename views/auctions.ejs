@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Auctions - Bridgo</title>
+    <title>My Supplier Auctions - Bridgo</title>
     <style>
         * {
             margin: 0;
@@ -12,11 +12,10 @@
         }
         
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: #f4f8fb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            padding: 20px;
         }
         
         /* Navigation Bar */
@@ -27,6 +26,7 @@
             position: sticky;
             top: 0;
             z-index: 1000;
+            margin: -20px -20px 20px -20px;
         }
         
         .nav-container {
@@ -47,14 +47,28 @@
             align-items: center;
             text-decoration: none;
             color: white;
+            font-weight: 700;
+            font-size: 1.4rem;
+            transition: transform 0.2s;
+        }
+        
+        .nav-logo:hover {
+            transform: translateY(-1px);
         }
         
         .nav-logo img {
-            height: 40px;
-            width: 40px;
-            margin-right: 10px;
-            border-radius: 50%;
-            object-fit: cover;
+            height: 60px;
+            width: 60px;
+            margin-right: 18px;
+            object-fit: contain;
+            background: transparent;    
+            padding: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: block;
+        }
+        .nav-logo img:hover {
+            transform: scale(1.08) rotate(-3deg);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.22);
         }
         
         .nav-right {
@@ -100,229 +114,291 @@
             transition: 0.3s;
         }
         
-        /* Main Content */
-        main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
         .container {
-            max-width: 900px;
-            margin: 36px auto;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            padding: 32px 28px 36px 28px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
         }
         
         .header {
-            border-bottom: 2px solid #e3e3e3;
-            margin-bottom: 28px;
-            padding-bottom: 18px;
+            background: linear-gradient(135deg, #2e86de 0%, #1b4f72 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
         }
         
         .header h1 {
-            margin: 0 0 8px 0;
-            font-size: 2rem;
-            color: #2e86de;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
         }
         
-        .header-details {
-            color: #444;
-            font-size: 1.08rem;
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
         }
         
-        .start-auction-form {
-            margin-top: 18px;
-            margin-bottom: 32px;
-            background: #f8fbff;
-            border: 1px solid #e0e7ef;
-            border-radius: 8px;
-            padding: 18px 22px;
-            display: flex;
-            align-items: center;
-            gap: 18px;
+        .content {
+            padding: 40px;
         }
         
-        .start-auction-form label {
-            font-weight: 500;
-            color: #1b4f72;
-            margin-right: 8px;
-        }
-        
-        .start-auction-form select,
-        .start-auction-form input[type="number"] {
-            padding: 6px 10px;
-            border-radius: 4px;
-            border: 1px solid #bcd0ee;
-            font-size: 1rem;
-            margin-right: 12px;
-        }
-        
-        .start-auction-form input[type="number"] {
-            width: 80px;
-        }
-        
-        .start-auction-form button {
-            background: #2e86de;
-            color: #fff;
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
             border: none;
-            border-radius: 4px;
-            padding: 8px 18px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
             transition: background 0.2s;
         }
         
-        .start-auction-form button:hover {
-            background: #1b4f72;
+        .back-btn:hover {
+            background: #5a6268;
         }
         
-        .auctions-list {
-            margin-top: 18px;
+        .start-auction-form {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid #e9ecef;
         }
         
-        .auction-card {
-            background: #f8fbff;
-            border: 1px solid #e0e7ef;
-            border-radius: 8px;
-            margin-bottom: 18px;
-            padding: 18px 22px;
-            display: flex;
-            align-items: flex-start;
-            gap: 18px;
-        }
-        
-        .auction-image {
-            width: 110px;
-            height: 110px;
-            object-fit: cover;
-            border-radius: 6px;
-            border: 1px solid #dbeafe;
-            background: #eaf1fa;
-        }
-        
-        .auction-details {
-            flex: 1;
-        }
-        
-        .auction-title {
-            font-size: 1.2rem;
+        .form-title {
+            font-size: 1.3rem;
             font-weight: 600;
             color: #2e86de;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #495057;
             margin-bottom: 8px;
         }
         
-        .auction-info {
-            color: #666;
-            font-size: 0.95rem;
-            line-height: 1.5;
+        .form-group select,
+        .form-group input[type="number"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
         }
         
-        .auction-info p {
-            margin: 4px 0;
+        .form-group select:focus,
+        .form-group input[type="number"]:focus {
+            outline: none;
+            border-color: #2e86de;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .auction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .auction-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.2s;
+            border: 2px solid #f8f9fa;
+        }
+        
+        .auction-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .auction-header {
+            background: linear-gradient(135deg, #2e86de 0%, #1b4f72 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .auction-header h3 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
         }
         
         .auction-status {
             display: inline-block;
             padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             font-weight: 600;
             margin-top: 8px;
-        }
-        
-        .status-live {
-            background: #e74c3c;
-            color: white;
-        }
-        
-        .status-ended {
-            background: #6c757d;
-            color: white;
         }
         
         .status-pending {
             background: #ffc107;
-            color: #212529;
+            color: #856404;
         }
         
-        /* Footer */
-        .footer {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        .status-live {
+            background: #dc3545;
             color: white;
-            padding: 1rem 0;
-            margin-top: auto;
         }
         
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-        
-        .footer-section {
-            text-align: center;
-        }
-        
-        .footer-section h3 {
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-        }
-        
-        .footer-section a {
+        .status-ended {
+            background: #28a745;
             color: white;
-            text-decoration: none;
-            display: block;
-            margin-bottom: 0.3rem;
-            transition: color 0.3s;
         }
         
-        .footer-section a:hover {
-            color: #3498db;
+        .auction-body {
+            padding: 20px;
         }
         
-        .footer-bottom {
-            text-align: center;
-            padding: 0.5rem 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin-top: 1rem;
+        .auction-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 2px solid #e9ecef;
         }
         
-        .footer-bottom p {
-            color: #bdc3c7;
-            font-size: 0.9rem;
+        .auction-details {
+            margin-bottom: 20px;
         }
         
-        .dashboard-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(90deg, #2e86de 0%, #6dd5ed 100%);
-            color: #fff;
-            border: none;
-            border-radius: 25px;
-            padding: 10px 28px;
-            font-size: 1.08rem;
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f3f4;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
             font-weight: 600;
-            box-shadow: 0 2px 8px rgba(46,134,222,0.10);
+            color: #495057;
+        }
+        
+        .detail-value {
+            color: #6c757d;
+        }
+        
+        .bid-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .bid-info h4 {
+            color: #2e86de;
+            margin-bottom: 10px;
+        }
+        
+        .current-bid {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #28a745;
+        }
+        
+        .no-bids {
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .auction-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
             text-decoration: none;
-            margin-bottom: 24px;
-            margin-top: 8px;
-            transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+            font-weight: 600;
+            font-size: 0.9rem;
             cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            text-align: center;
         }
-        .dashboard-btn:hover {
-            background: linear-gradient(90deg, #1b4f72 0%, #2980b9 100%);
-            box-shadow: 0 4px 16px rgba(46,134,222,0.18);
-            transform: translateY(-2px) scale(1.03);
-            color: #fff;
+        
+        .btn-view {
+            background: #2e86de;
+            color: white;
         }
+        
+        .btn-view:hover {
+            background: #1b4f72;
+        }
+        
+        .btn-disabled {
+            background: #6c757d;
+            color: white;
+            cursor: not-allowed;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #495057;
+        }
+        
+        .empty-state p {
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+        }
+        
+        /* Dark Mode Styles */
         .dark-mode-toggle {
             background: none;
             border: none;
@@ -330,108 +406,160 @@
             cursor: pointer;
             font-size: 1.7rem;
             margin-left: 18px;
-            color: #2e86de;
+            color: #fff;
             border-radius: 50%;
             transition: background 0.2s, color 0.2s;
             padding: 6px 10px;
         }
+        
         .dark-mode-toggle:hover {
-            background: rgba(46,134,222,0.10);
+            background: rgba(255,255,255,0.15);
             color: #ffe066;
         }
+        
         body.dark-mode {
             background: #181c24;
             color: #f1f1f1;
         }
+        
         body.dark-mode .container {
             background: #232a36;
             color: #f1f1f1;
             box-shadow: 0 2px 12px rgba(0,0,0,0.25);
         }
-        body.dark-mode .header {
-            border-bottom: 2px solid #232a36;
+        
+        body.dark-mode .header h1 {
             color: #ffe066;
         }
+        
         body.dark-mode .auction-card {
             background: #232a36;
             color: #f1f1f1;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+            border: 1px solid #34495e;
         }
-        body.dark-mode .auction-title {
+        
+        body.dark-mode .auction-header h3 {
             color: #ffe066;
         }
+        
+        body.dark-mode .detail-label {
+            color: #ffe066;
+        }
+        
+        body.dark-mode .detail-value {
+            color: #f1f1f1;
+        }
+        
+        body.dark-mode .bid-info {
+            background: #232a36;
+            color: #f1f1f1;
+            border: 1px solid #34495e;
+        }
+        
+        body.dark-mode .bid-info h4 {
+            color: #ffe066;
+        }
+        
+        body.dark-mode .current-bid {
+            color: #4ade80;
+        }
+        
+        body.dark-mode .no-bids {
+            color: #bdc3c7;
+        }
+        
+        body.dark-mode .empty-state {
+            color: #f1f1f1;
+        }
+        
+        body.dark-mode .empty-state h3 {
+            color: #ffe066;
+        }
+        
+        body.dark-mode .empty-state p {
+            color: #bdc3c7;
+        }
+        
+        body.dark-mode .back-btn {
+            background: #34495e;
+            color: #ffe066;
+        }
+        
+        body.dark-mode .back-btn:hover {
+            background: #232a36;
+            color: #fff;
+        }
+        
+        body.dark-mode .action-btn {
+            background: #34495e;
+            color: #ffe066;
+        }
+        
+        body.dark-mode .action-btn:hover {
+            background: #232a36;
+            color: #fff;
+        }
+        
+        body.dark-mode .btn-disabled {
+            background: #6c757d !important;
+            color: #bdc3c7 !important;
+        }
+        
         body.dark-mode .start-auction-form {
             background: #232a36;
             color: #f1f1f1;
             border: 1px solid #34495e;
         }
-        body.dark-mode .start-auction-form label {
+        
+        body.dark-mode .form-title {
             color: #ffe066;
         }
-        body.dark-mode .start-auction-form input,
-        body.dark-mode .start-auction-form select {
+        
+        body.dark-mode .form-group label {
+            color: #ffe066;
+        }
+        
+        body.dark-mode .form-group select,
+        body.dark-mode .form-group input[type="number"] {
             background: #232a36;
             color: #f1f1f1;
             border: 1px solid #34495e;
         }
-        body.dark-mode .start-auction-form button {
-            background: #ffe066;
-            color: #232a36;
-        }
-        body.dark-mode .start-auction-form button:hover {
-            background: #ffd700;
-            color: #181c24;
-        }
-        body.dark-mode .dashboard-btn {
-            background: linear-gradient(90deg, #232a36 0%, #2e86de 100%);
+        
+        body.dark-mode .submit-btn {
+            background: linear-gradient(135deg, #232a36 0%, #2e86de 100%);
             color: #ffe066;
         }
-        body.dark-mode .dashboard-btn:hover {
-            background: linear-gradient(90deg, #1b4f72 0%, #2980b9 100%);
+        
+        body.dark-mode .submit-btn:hover {
+            background: linear-gradient(135deg, #1b4f72 0%, #2980b9 100%);
             color: #fff;
         }
-        body.dark-mode .winner-details {
-            background: #232a36 !important;
-            border: 2px solid #ffe066 !important;
-            box-shadow: 0 4px 12px rgba(255, 224, 102, 0.08) !important;
+        
+        body.dark-mode .header p {
+            color: #f1f1f1;
         }
-        body.dark-mode .winner-details h4,
-        body.dark-mode .winner-details h5 {
-            color: #ffe066 !important;
-        }
-        body.dark-mode .winner-details p,
-        body.dark-mode .winner-details strong,
-        body.dark-mode .winner-details span {
-            color: #f1f1f1 !important;
-        }
-        body.dark-mode .winner-details .bid-info,
-        body.dark-mode .winner-details .contact-info,
-        body.dark-mode .winner-details > div[style*='background: white'],
-        body.dark-mode .winner-details > div[style*='background: #f8f9fa'],
-        body.dark-mode .winner-details div[style*='background: white'],
-        body.dark-mode .winner-details div[style*='background: #f8f9fa'] {
-            background: #181c24 !important;
-            color: #f1f1f1 !important;
-            border: 1px solid #34495e !important;
-        }
-        body.dark-mode .winner-details h5 {
-            color: #ffe066 !important;
-            border-bottom: 2px solid #ffe066 !important;
-        }
-        body.dark-mode .winner-details a {
-            color: #ffe066 !important;
-            background: #232a36 !important;
-            border: 1px solid #ffe066 !important;
-        }
-        body.dark-mode .winner-details a:hover {
-            background: #ffe066 !important;
-            color: #232a36 !important;
+        
+        body.dark-mode .content {
+            color: #f1f1f1;
         }
         
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .navbar {
                 padding: 1rem;
+            }
+            
+            .nav-logo img {
+                height: 45px;
+                width: 45px;
+                margin-right: 12px;
+                padding: 5px;
+                background: transparent;
+            }
+            
+            .nav-logo {
+                font-size: 1.3rem;
             }
             
             .nav-container {
@@ -471,45 +599,42 @@
             }
             
             .container {
-                margin: 20px;
-                padding: 20px;
+                margin: 10px;
             }
             
             .header h1 {
-                font-size: 1.5rem;
+                font-size: 2rem;
             }
             
-            .start-auction-form {
+            .content {
+                padding: 20px;
+            }
+            
+            .form-row {
                 flex-direction: column;
                 align-items: stretch;
             }
             
-            .auction-card {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .auction-image {
-                width: 100%;
-                height: 200px;
-                margin-bottom: 15px;
-            }
-            
-            .footer-container {
+            .auction-grid {
                 grid-template-columns: 1fr;
-                text-align: center;
-            }
-        }
-        
-        @media (max-width: 700px) {
-            .container {
-                padding: 12px 2vw 18px 2vw;
+                gap: 15px;
             }
         }
         
         @media (max-width: 480px) {
             .container {
-                margin: 10px;
+                margin: 5px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .content {
                 padding: 15px;
             }
             
@@ -534,6 +659,9 @@
                     <li><a href="/vendor/login">Vendor</a></li>
                     <li><a href="/supplier/login" class="active">Supplier</a></li>
                 </ul>
+                <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode">
+                    <span id="darkModeIcon">🌙</span>
+                </button>
             </div>
             <div class="hamburger">
                 <span></span>
@@ -544,90 +672,129 @@
     </nav>
 
     <!-- Main Content -->
-    <main>
-        <div class="container">
-            <div class="header">
-                <h1>My Auctions</h1>
-                <div class="header-details">
-                    Welcome, <strong><%= supplier.name %></strong>! Manage your auctions and start new ones.
-                </div>
-                <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode">
-                    <span id="darkModeIcon">🌙</span>
-                </button>
-            </div>
-            <a href="/supplier" class="dashboard-btn">
-                <span style="font-size:1.3em;">🏠</span> Back to Dashboard
-            </a>
+    <div class="container">
+        <div class="header">
+            <h1>🏭 My Supplier Auctions</h1>
+            <p>Welcome, <strong><%= supplier.name %></strong>! Manage your auctions and start new ones.</p>
+        </div>
+        
+        <div class="content">
+            <a href="/supplier" class="back-btn">← Back to Dashboard</a>
             
-            <form class="start-auction-form" action="/supplier/auction/start" method="POST">
-                <label for="stockSelect">Select Stock:</label>
-                <select name="stockId" id="stockSelect" required>
-                    <option value="">Choose a stock item...</option>
-                    <% if (stocks && stocks.length > 0) { %>
-                        <% stocks.forEach(stock => { %>
-                            <option value="<%= stock._id %>"><%= stock.name %> - ₹<%= stock.price %></option>
-                        <% }); %>
-                    <% } %>
-                </select>
-                
-                <label for="duration">Duration (hours):</label>
-                <input type="number" name="duration" id="duration" min="1" max="24" value="2" required>
-                
-                <button type="submit">Start Auction</button>
+            <form class="start-auction-form" action="/supplier/startAuction" method="POST">
+                <div class="form-title">🚀 Start New Auction</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="stockSelect">Select Stock:</label>
+                        <select name="auctionId" id="stockSelect" required>
+                            <option value="">Choose a stock item...</option>
+                            <% if (stocks && stocks.length > 0) { %>
+                                <% stocks.forEach(stock => { %>
+                                    <option value="<%= stock._id %>"><%= stock.name %> - ₹<%= stock.basePrice %></option>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="duration">Duration (hours):</label>
+                        <input type="number" name="duration" id="duration" min="1" max="24" value="2" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="submit-btn">🎯 Start Auction</button>
+                    </div>
+                </div>
             </form>
             
-            <div class="auctions-list">
-                <h3>Your Auctions</h3>
-                <% if (auctions && auctions.length > 0) { %>
+            <% if (auctions && auctions.length > 0) { %>
+                <div class="auction-grid">
                     <% auctions.forEach(auction => { %>
                         <div class="auction-card">
-                            <% if (auction.image) { %>
-                                <img src="<%= auction.image %>" alt="<%= auction.name %>" class="auction-image">
-                            <% } else { %>
-                                <div class="auction-image" style="display: flex; align-items: center; justify-content: center; color: #999;">
-                                    No Image
+                            <div class="auction-header">
+                                <h3><%= auction.name %></h3>
+                                <% 
+                                const now = new Date();
+                                const auctionEnd = auction.auctionEnd ? new Date(auction.auctionEnd) : null;
+                                const isEnded = auctionEnd && auctionEnd <= now;
+                                const actualStatus = isEnded ? 'ended' : auction.isLive ? 'live' : 'pending';
+                                %>
+                                <div class="auction-status status-<%= actualStatus %>">
+                                    <%= actualStatus === 'live' ? '🔴 LIVE' : actualStatus === 'ended' ? '🟢 ENDED' : '⏳ PENDING' %>
                                 </div>
-                            <% } %>
-                            <div class="auction-details">
-                                <div class="auction-title"><%= auction.name %></div>
-                                <div class="auction-info">
-                                    <p><strong>Base Price:</strong> ₹<%= auction.basePrice %></p>
-                                    <p><strong>Quantity:</strong> <%= auction.quantity %></p>
-                                    <p><strong>Location:</strong> <%= auction.area %>, <%= auction.city %>, <%= auction.state %></p>
+                            </div>
+                            
+                            <div class="auction-body">
+                                <% if (auction.image) { %>
+                                    <img src="<%= auction.image %>" alt="<%= auction.name %>" class="auction-image">
+                                <% } else { %>
+                                    <div class="auction-image" style="display: flex; align-items: center; justify-content: center; color: #999; background: #f8f9fa; border: 2px dashed #dee2e6;">
+                                        📷 No Image
+                                    </div>
+                                <% } %>
+                                
+                                <div class="auction-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Base Price:</span>
+                                        <span class="detail-value">₹<%= auction.basePrice %></span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Quantity:</span>
+                                        <span class="detail-value"><%= auction.quantity %></span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Location:</span>
+                                        <span class="detail-value"><%= auction.area %>, <%= auction.city %>, <%= auction.state %></span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Created:</span>
+                                        <span class="detail-value"><%= new Date(auction.createdAt).toLocaleDateString() %></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="bid-info">
+                                    <h4>💰 Current Bid</h4>
                                     <% if (auction.currentBid) { %>
-                                        <p><strong>Current Bid:</strong> ₹<%= auction.currentBid %></p>
+                                        <div class="current-bid">₹<%= auction.currentBid %></div>
+                                    <% } else { %>
+                                        <div class="no-bids">No bids yet</div>
                                     <% } %>
-                                    <p><strong>Created:</strong> <%= new Date(auction.createdAt).toLocaleDateString() %></p>
                                 </div>
-                                <div class="auction-status <%= auction.isLive ? 'status-live' : auction.auctionEnd ? 'status-ended' : 'status-pending' %>">
-                                    <%= auction.isLive ? '🔴 LIVE' : auction.auctionEnd ? '🟢 ENDED' : '⏳ PENDING' %>
+                                
+                                <div class="auction-actions">
+                                    <% if (actualStatus === 'live') { %>
+                                        <a href="/supplier/live-auction/<%= auction._id %>" class="action-btn btn-view">👁️ View Live</a>
+                                    <% } else if (actualStatus === 'ended') { %>
+                                        <button class="action-btn btn-disabled" disabled>✅ Completed</button>
+                                    <% } else { %>
+                                        <button class="action-btn btn-disabled" disabled>⏳ Pending</button>
+                                    <% } %>
                                 </div>
+                                <% if (actualStatus === 'ended' && auction.winner && auction.winner.supplierName) { %>
+                                <div class="winner-section" style="background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%); color: white; border-radius: 12px; padding: 18px; margin-top: 18px; text-align: center;">
+                                    <h4 style="margin-bottom: 10px; font-size: 1.2rem;">🏆 Auction Winner</h4>
+                                    <div class="winner-details" style="background: rgba(255,255,255,0.08); padding: 10px; border-radius: 8px; margin-top: 8px;">
+                                        <p><strong>Supplier:</strong> <%= auction.winner.supplierName %></p>
+                                        <p><strong>Winning Bid:</strong> ₹<%= auction.winner.winningBid %></p>
+                                        <p><strong>Phone:</strong> <%= auction.winner.supplierPhone %></p>
+                                        <p><strong>Email:</strong> <%= auction.winner.supplierEmail %></p>
+                                        <p><strong>Address:</strong> <%= auction.winner.supplierAddress %></p>
+                                    </div>
+                                    <!-- No contact buttons -->
+                                </div>
+                                <% } %>
                             </div>
                         </div>
                     <% }); %>
-                <% } else { %>
-                    <p style="text-align: center; color: #666; padding: 20px;">
-                        No auctions created yet. Start your first auction above!
-                    </p>
-                <% } %>
-            </div>
+                </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <h3>📋 No Auctions Yet</h3>
+                    <p>You haven't created any auctions yet. Start by creating your first auction to get vendors bidding on your stock.</p>
+                </div>
+            <% } %>
         </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <a href="/">Home</a>
-                <a href="/vendor/login">Vendor Login</a>
-                <a href="/supplier/login">Supplier Login</a>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 Team Global. All rights reserved.</p>
-        </div>
-    </footer>
+    </div>
 
     <script>
         // Mobile menu toggle
@@ -644,11 +811,11 @@
                 navMenu.classList.remove('active');
             });
         });
-    </script>
-    <script>
+        
         // Dark mode toggle
         const darkModeToggle = document.getElementById('darkModeToggle');
         const darkModeIcon = document.getElementById('darkModeIcon');
+        
         function setDarkMode(enabled) {
             if (enabled) {
                 document.body.classList.add('dark-mode');
@@ -658,9 +825,11 @@
                 darkModeIcon.textContent = '🌙';
             }
         }
+        
         // Load preference
         const darkPref = localStorage.getItem('darkMode') === 'true';
         setDarkMode(darkPref);
+        
         darkModeToggle.addEventListener('click', () => {
             const enabled = !document.body.classList.contains('dark-mode');
             setDarkMode(enabled);

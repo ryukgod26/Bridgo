@@ -51,10 +51,9 @@
         
         .nav-logo img {
             height: 40px;
-            width: 40px;
+            width: auto;
             margin-right: 10px;
-            border-radius: 50%;
-            object-fit: cover;
+            object-fit: contain;
         }
         
         .nav-right {
@@ -139,6 +138,22 @@
             animation: pulse 2s infinite;
         }
         
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+        
+        .back-btn:hover {
+            background: #5a6268;
+        }
+        
         @keyframes pulse {
             0% { opacity: 1; }
             50% { opacity: 0.7; }
@@ -220,6 +235,36 @@
         
         .bid-form button:hover {
             background: #c0392b;
+        }
+        
+        .owner-notice {
+            background: #f8f9fa;
+            border: 2px solid #e74c3c;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .owner-notice p {
+            color: #e74c3c;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .login-notice {
+            background: #f8f9fa;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .login-notice p {
+            color: #007bff;
+            font-weight: 600;
+            margin: 0;
         }
         
         .bid-history {
@@ -420,6 +465,11 @@
             <div class="header">
                 <h1><%= auction.name %></h1>
                 <div class="live-indicator">🔴 LIVE AUCTION</div>
+                <% if (vendor) { %>
+                    <a href="/vendor" class="back-btn">← Back to Dashboard</a>
+                <% } else if (supplier) { %>
+                    <a href="/supplier" class="back-btn">← Back to Dashboard</a>
+                <% } %>
             </div>
             <div class="content">
                 <div class="auction-info">
@@ -438,10 +488,20 @@
                             <h2>₹<span id="current-bid"><%= auction.currentBid || auction.basePrice %></span></h2>
                             <p class="current-bidder">Current Bid: <span id="current-bidder"><%= auction.currentBidder || 'No bids yet' %></span></p>
                         </div>
-                        <form class="bid-form" id="bidForm">
-                            <input type="number" id="bidAmount" placeholder="Enter your bid amount" min="<%= (auction.currentBid || auction.basePrice) + 1 %>" required>
-                            <button type="submit">Place Bid</button>
-                        </form>
+                        <% if (vendor && !isSupplierOwner) { %>
+                            <form class="bid-form" id="bidForm">
+                                <input type="number" id="bidAmount" placeholder="Enter your bid amount" min="<%= (auction.currentBid || auction.basePrice) + 1 %>" required>
+                                <button type="submit">Place Bid</button>
+                            </form>
+                        <% } else if (isSupplierOwner) { %>
+                            <div class="owner-notice">
+                                <p>👁️ <strong>Viewing Mode:</strong> You are viewing your own auction. Only vendors can place bids.</p>
+                            </div>
+                        <% } else if (!vendor) { %>
+                            <div class="login-notice">
+                                <p>🔐 <strong>Login Required:</strong> Please log in as a vendor to place bids.</p>
+                            </div>
+                        <% } %>
                     </div>
                 </div>
                 <div class="bid-history">
@@ -505,6 +565,10 @@
             vendorEmail: '<%= vendor ? vendor.email : "" %>',
             vendorAddress: '<%= vendor ? ([vendor.address, vendor.area, vendor.city, vendor.state].filter(Boolean).join(", ") || "") : "" %>'
         };
+        
+        // Debug: Log vendor data
+        console.log('Vendor data:', vendor);
+        console.log('Is supplier owner:', <%= isSupplierOwner %>);
         
         // Join auction room
         socket.emit('joinAuction', auctionId);
@@ -589,8 +653,10 @@
             }
         });
         
-        // Handle bid form submission
-        document.getElementById('bidForm').addEventListener('submit', async (e) => {
+        // Handle bid form submission (only for vendors, not suppliers viewing their own auction)
+        const bidForm = document.getElementById('bidForm');
+        if (bidForm) {
+            bidForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const bidAmount = parseInt(document.getElementById('bidAmount').value);
@@ -622,7 +688,8 @@
                 
                 if (result.success) {
                     document.getElementById('bidAmount').value = '';
-                    showNotification('Bid placed successfully!', 'success');
+                    // Do NOT update the bid UI here; UI will update via socket.on('newBid')
+                    showNotification('Bid placed successfully! Waiting for confirmation...', 'success');
                 } else {
                     showNotification(result.error || 'Failed to place bid', 'error');
                 }
@@ -630,6 +697,7 @@
                 showNotification('Error placing bid', 'error');
             }
         });
+        }
         
         // Notification function
         function showNotification(message, type = 'info') {

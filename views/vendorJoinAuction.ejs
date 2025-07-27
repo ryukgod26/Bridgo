@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Join Auction - Vendor - Bridgo</title>
+    <title>Ask Requirements - Vendor - Bridgo</title>
     <style>
         * {
             margin: 0;
@@ -51,10 +51,9 @@
         
         .nav-logo img {
             height: 40px;
-            width: 40px;
+            width: auto;
             margin-right: 10px;
-            border-radius: 50%;
-            object-fit: cover;
+            object-fit: contain;
         }
         
         .nav-right {
@@ -125,6 +124,22 @@
             color: #2e86de;
             font-size: 2rem;
             margin-bottom: 8px;
+        }
+        
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+        
+        .back-btn:hover {
+            background: #5a6268;
         }
         
         .requirement-form {
@@ -512,8 +527,9 @@
     <main>
         <div class="container">
             <div class="header">
-                <h1>Join Auction</h1>
+                <h1>Ask Requirements</h1>
                 <p>Browse available auctions and submit your requirements</p>
+                <a href="/vendor" class="back-btn">← Back to Dashboard</a>
             </div>
             
             <% if (typeof success !== 'undefined' && success) { %>
@@ -567,9 +583,9 @@
                                     <p><strong>Current Bid:</strong> ₹<%= auction.currentBid %></p>
                                 <% } %>
                             </div>
-                            <a href="/supplier/live-auction/<%= auction._id %>" class="join-btn">
+                            <a href="/vendor/live-auction/<%= auction._id %>" class="join-btn">
                                 <% if (auction.isLive) { %>
-                                    Join Live Auction
+                                    Enter Requirement
                                 <% } else { %>
                                     View Details
                                 <% } %>

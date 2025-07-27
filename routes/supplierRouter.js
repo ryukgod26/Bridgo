@@ -155,7 +155,7 @@ router.post("/startAuction", async (req, res) => {
 
         // Mark auction as "live" and set start/end time
         const now = new Date();
-        const endTime = new Date(now.getTime() + parseInt(duration) * 60000); // duration in minutes
+        const endTime = new Date(now.getTime() + parseInt(duration) * 60 * 60 * 1000); // duration in hours converted to milliseconds
 
         auction.isLive = true;
         auction.auctionStart = now;
@@ -200,7 +200,7 @@ router.post("/startAuction", async (req, res) => {
     }
 });
 
-// Route to view live auction (for vendors)
+// Route to view live auction (for vendors and suppliers)
 router.get("/live-auction/:auctionId", async (req, res) => {
     try {
         const { auctionId } = req.params;
@@ -216,13 +216,17 @@ router.get("/live-auction/:auctionId", async (req, res) => {
         
         // Get vendor information from session if available
         const vendor = req.session.vendor || null;
+        const supplier = req.session.supplier || null;
         
-        // If no vendor session, redirect to vendor login
-        if (!vendor) {
+        // Check if current user is the supplier who created this auction
+        const isSupplierOwner = supplier && auction.supplierName === supplier.name;
+        
+        // If no vendor session and no supplier session, redirect to vendor login
+        if (!vendor && !supplier) {
             return res.redirect("/vendor/login");
         }
         
-        res.render("liveAuction", { auction, vendor });
+        res.render("liveAuction", { auction, vendor, supplier, isSupplierOwner });
     } catch (err) {
         res.status(500).send("Error fetching auction: " + err.message);
     }
@@ -231,11 +235,21 @@ router.get("/live-auction/:auctionId", async (req, res) => {
 // Route to place a bid
 router.post("/place-bid", async (req, res) => {
     try {
+        // Check if user is logged in as a vendor
+        if (!req.session.vendor) {
+            return res.status(401).json({ error: "Only vendors can place bids. Please log in as a vendor." });
+        }
+        
         const { auctionId, vendorId, vendorName, vendorPhone, vendorEmail, vendorAddress, bidAmount } = req.body;
         
         const auction = await Stock.findById(auctionId);
         if (!auction || !auction.isLive) {
             return res.status(400).json({ error: "Auction not found or not live" });
+        }
+        
+        // Ensure vendor is not bidding on their own auction (if they somehow got access)
+        if (auction.supplierName === req.session.vendor.name) {
+            return res.status(403).json({ error: "You cannot bid on your own auction" });
         }
         
         if (bidAmount <= auction.currentBid) {
@@ -367,19 +381,13 @@ router.get("/requirements", async (req, res) => {
                 }
             }
             
-            // Strict city matching - must be exact match or very close
+            // Strict city matching - must be exact match
             let cityMatches = false;
             if (!supplierCity || !vendorCity) {
-                cityMatches = true; // Show all if either city is missing
+                cityMatches = false; // Do not show if either city is missing
             } else {
-                // Exact match
-                if (supplierCity === vendorCity) {
-                    cityMatches = true;
-                } else {
-                    // Check if cities are in same state/region (for major cities)
-                    const sameRegion = checkSameRegion(supplierCity, vendorCity);
-                    cityMatches = sameRegion;
-                }
+                // Exact match only
+                cityMatches = (supplierCity === vendorCity);
             }
             
             // Item name matching
@@ -445,9 +453,27 @@ router.post("/respond-requirement", async (req, res) => {
         
         const { requirementId, message, proposedPrice, proposedQuantity } = req.body;
         
+        // Check if required fields are present
+        if (!message || !proposedPrice || !proposedQuantity) {
+            return res.status(400).send("All fields are required: message, proposed price, and proposed quantity.");
+        }
+        
         const requirement = await Requirement.findById(requirementId);
         if (!requirement) {
             return res.status(404).send("Requirement not found");
+        }
+        
+        // Validate and parse numeric values
+        const parsedPrice = parseFloat(proposedPrice);
+        const parsedQuantity = parseInt(proposedQuantity);
+        
+        // Check if parsing resulted in NaN
+        if (isNaN(parsedPrice)) {
+            return res.status(400).send("Invalid proposed price. Please enter a valid number.");
+        }
+        
+        if (isNaN(parsedQuantity)) {
+            return res.status(400).send("Invalid proposed quantity. Please enter a valid number.");
         }
         
         // Add supplier response
@@ -457,8 +483,8 @@ router.post("/respond-requirement", async (req, res) => {
             supplierPhone: req.session.supplier.phone,
             supplierEmail: req.session.supplier.email,
             message,
-            proposedPrice: parseFloat(proposedPrice),
-            proposedQuantity: parseInt(proposedQuantity)
+            proposedPrice: parsedPrice,
+            proposedQuantity: parsedQuantity
         });
         
         await requirement.save();
@@ -473,12 +499,62 @@ router.post("/respond-requirement", async (req, res) => {
 
 // ========== SUPPLIER VENDOR AUCTION ROUTES ==========
 
+// Function to update vendor auction status based on time
+async function updateVendorAuctionStatus() {
+    try {
+        const now = new Date();
+        // Update live auctions that have ended
+        const endedAuctions = await VendorAuction.find({
+            status: 'live',
+            isLive: true,
+            auctionEnd: { $lte: now }
+        });
+        for (const auction of endedAuctions) {
+            // Find the lowest bid (for reverse auction)
+            if (auction.bidders && auction.bidders.length > 0) {
+                const winningBidder = auction.bidders.reduce((min, b) => b.bidAmount < min.bidAmount ? b : min, auction.bidders[0]);
+                auction.winner = {
+                    supplierId: winningBidder.supplierId,
+                    supplierName: winningBidder.supplierName,
+                    supplierPhone: winningBidder.supplierPhone,
+                    supplierEmail: winningBidder.supplierEmail,
+                    supplierAddress: winningBidder.supplierAddress,
+                    winningBid: winningBidder.bidAmount,
+                    winTime: new Date()
+                };
+            }
+            auction.status = 'ended';
+            auction.isLive = false;
+            await auction.save();
+        }
+        // Update pending auctions that should be live
+        await VendorAuction.updateMany(
+            {
+                status: 'pending',
+                auctionStart: { $lte: now },
+                auctionEnd: { $gt: now }
+            },
+            {
+                $set: {
+                    status: 'live',
+                    isLive: true
+                }
+            }
+        );
+    } catch (err) {
+        console.error('Error updating vendor auction status:', err);
+    }
+}
+
 // Route to view all vendor auctions
 router.get("/vendor-auctions", async (req, res) => {
     try {
         if (!req.session.supplier) {
             return res.redirect("/supplier/login");
         }
+        
+        // Update auction status before fetching
+        await updateVendorAuctionStatus();
         
         const liveAuctions = await VendorAuction.find({ 
             status: 'live',
@@ -502,6 +578,10 @@ router.get("/vendor-auction/:auctionId", async (req, res) => {
         }
         
         const { auctionId } = req.params;
+        
+        // Update auction status before fetching
+        await updateVendorAuctionStatus();
+        
         const auction = await VendorAuction.findById(auctionId);
         
         if (!auction) {
@@ -520,24 +600,41 @@ router.get("/vendor-auction/:auctionId", async (req, res) => {
 // Route to place a bid on vendor auction
 router.post("/place-vendor-bid", async (req, res) => {
     try {
+        console.log('Bid request received:', req.body);
+        console.log('Session supplier:', req.session.supplier);
+        
         if (!req.session.supplier) {
+            console.log('No supplier session found');
             return res.status(401).json({ success: false, error: "Not authenticated" });
         }
         
         const { auctionId, bidAmount } = req.body;
+        console.log('Auction ID:', auctionId);
+        console.log('Bid amount:', bidAmount);
         
         const auction = await VendorAuction.findById(auctionId);
+        console.log('Found auction:', auction ? 'Yes' : 'No');
+        
         if (!auction) {
+            console.log('Auction not found');
             return res.status(404).json({ success: false, error: "Auction not found" });
         }
         
+        console.log('Auction status:', auction.status);
+        console.log('Auction isLive:', auction.isLive);
+        
         if (auction.status !== 'live' || !auction.isLive) {
+            console.log('Auction is not live');
             return res.status(400).json({ success: false, error: "Auction is not live" });
         }
         
         // Validate bid amount (must be lower than current lowest bid or base price)
         const currentLowest = auction.currentLowestBid || auction.basePrice;
+        console.log('Current lowest bid:', currentLowest);
+        console.log('New bid amount:', parseFloat(bidAmount));
+        
         if (parseFloat(bidAmount) >= currentLowest) {
+            console.log('Bid amount too high');
             return res.status(400).json({ 
                 success: false, 
                 error: "Your bid must be lower than the current lowest bid" 

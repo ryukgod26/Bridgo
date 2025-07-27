@@ -51,10 +51,9 @@
         
         .nav-logo img {
             height: 40px;
-            width: 40px;
+            width: auto;
             margin-right: 10px;
-            border-radius: 50%;
-            object-fit: cover;
+            object-fit: contain;
         }
         
         .nav-right {
@@ -131,6 +130,22 @@
             margin: 0;
             font-size: 1.2rem;
             opacity: 0.9;
+        }
+        
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+        
+        .back-btn:hover {
+            background: #5a6268;
         }
         
         /* Search Panel */
@@ -645,6 +660,7 @@
             <div class="header">
                 <h1>🔴 Live Auctions</h1>
                 <p>Welcome, <strong><%= vendor.name %></strong>! Join live auctions and place your bids in real-time.</p>
+                <a href="/vendor" class="back-btn">← Back to Dashboard</a>
             </div>
             
             <!-- Search Panel -->
@@ -727,7 +743,7 @@
                                             <% } %>
                                         </div>
                                         
-                                        <a href="/supplier/live-auction/<%= auction._id %>" class="join-btn">Join Auction</a>
+                                        <a href="/vendor/live-auction/<%= auction._id %>" class="join-btn">Join Auction</a>
                                     </div>
                                 </div>
                             <% }); %>
@@ -808,7 +824,7 @@
                                             <% } %>
                                         </div>
                                         
-                                        <a href="/supplier/live-auction/<%= auction._id %>" class="join-btn">Join Auction</a>
+                                        <a href="/vendor/live-auction/<%= auction._id %>" class="join-btn">Join Auction</a>
                                     </div>
                                 </div>
                             <% }); %>

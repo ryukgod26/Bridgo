@@ -409,6 +409,18 @@
         <div class="content">
             <a href="/supplier/vendor-auctions" class="back-btn">← Back to Vendor Auctions</a>
             
+            <!-- Hidden data attributes for JavaScript -->
+            <% 
+            const auctionId = auction && auction._id ? auction._id : '';
+            const auctionEnd = auction && auction.auctionEnd ? auction.auctionEnd.toISOString() : new Date().toISOString();
+            const currentLowest = auction && auction.currentLowestBid ? auction.currentLowestBid : (auction && auction.basePrice ? auction.basePrice : 0);
+            const supplierName = supplier && supplier.name ? supplier.name : '';
+            %>
+            <div data-auction-id="<%= auctionId %>" style="display: none;"></div>
+            <div data-auction-end="<%= auctionEnd %>" style="display: none;"></div>
+            <div data-current-lowest="<%= currentLowest %>" style="display: none;"></div>
+            <div data-supplier-name="<%= supplierName %>" style="display: none;"></div>
+            
             <div class="error-message" id="error-message" style="display: none;"></div>
             <div class="success-message" id="success-message" style="display: none;"></div>
             
@@ -445,22 +457,22 @@
                 <h3>👤 Vendor Information</h3>
                 <div class="vendor-details">
                     <div class="vendor-detail">
-                        <strong>Name:</strong> <span><%= auction.vendorName %></span>
+                        <strong>Name:</strong> <span><%= auction.vendorName || 'Not specified' %></span>
                     </div>
                     <div class="vendor-detail">
-                        <strong>City:</strong> <span><%= auction.vendorCity %></span>
+                        <strong>City:</strong> <span><%= auction.vendorCity || 'Not specified' %></span>
                     </div>
                     <div class="vendor-detail">
-                        <strong>Area:</strong> <span><%= auction.vendorArea %></span>
+                        <strong>Area:</strong> <span><%= auction.vendorArea || 'Not specified' %></span>
                     </div>
                     <div class="vendor-detail">
-                        <strong>Phone:</strong> <span><%= auction.vendorPhone %></span>
+                        <strong>Phone:</strong> <span><%= auction.vendorPhone || 'Not specified' %></span>
                     </div>
                     <div class="vendor-detail">
-                        <strong>Email:</strong> <span><%= auction.vendorEmail %></span>
+                        <strong>Email:</strong> <span><%= auction.vendorEmail || 'Not specified' %></span>
                     </div>
                     <div class="vendor-detail">
-                        <strong>Address:</strong> <span><%= auction.vendorAddress %></span>
+                        <strong>Address:</strong> <span><%= auction.vendorAddress || 'Not specified' %></span>
                     </div>
                 </div>
             </div>
@@ -476,11 +488,11 @@
                     <% if (auction.currentLowestBid) { %>
                         <div class="bid-amount">₹<%= auction.currentLowestBid %></div>
                         <div class="bidder-info">
-                            <strong>Lowest Bidder:</strong> <%= auction.currentLowestBidder %><br>
+                            <strong>Lowest Bidder:</strong> <%= auction.currentLowestBidder || 'Unknown' %><br>
                             <small>Total Bids: <%= auction.bidders ? auction.bidders.length : 0 %></small>
                         </div>
                     <% } else { %>
-                        <div class="bid-amount">₹<%= auction.basePrice %></div>
+                        <div class="bid-amount">₹<%= auction.basePrice || 'Not specified' %></div>
                         <div class="bidder-info">
                             <strong>No bids yet</strong><br>
                             <small>Be the first to bid!</small>
@@ -518,29 +530,62 @@
             
             <div class="bidders-list">
                 <h3>📊 All Bids</h3>
-                <div id="bidders-container">
-                    <% if (auction.bidders && auction.bidders.length > 0) { %>
-                        <% auction.bidders.sort((a, b) => a.bidAmount - b.bidAmount).forEach(function(bidder) { %>
-                            <div class="bidder-item">
-                                <div class="bidder-details">
-                                    <div class="bidder-name"><%= bidder.supplierName %></div>
-                                    <div class="bidder-contact">
-                                        📞 <%= bidder.supplierPhone %> | 📧 <%= bidder.supplierEmail %><br>
-                                        📍 <%= bidder.supplierCity %>
+                <% 
+                const sameCity = supplier && supplier.city ? supplier.city.toLowerCase() : '';
+                const sameCityBids = (auction.bidders || []).filter(bidder => (bidder.supplierCity || '').toLowerCase() === sameCity);
+                const otherCityBids = (auction.bidders || []).filter(bidder => (bidder.supplierCity || '').toLowerCase() !== sameCity);
+                %>
+                <div style="margin-bottom: 24px;">
+                    <h4 style="color:#28a745;">🏙️ Bids from Your City (<%= sameCityBids.length %>)</h4>
+                    <div id="bidders-samecity">
+                        <% if (sameCityBids.length > 0) { %>
+                            <% sameCityBids.sort((a, b) => a.bidAmount - b.bidAmount).forEach(function(bidder) { %>
+                                <div class="bidder-item">
+                                    <div class="bidder-details">
+                                        <div class="bidder-name"><%= bidder.supplierName %></div>
+                                        <div class="bidder-contact">
+                                            📞 <%= bidder.supplierPhone %> | 📧 <%= bidder.supplierEmail %><br>
+                                            📍 <%= bidder.supplierCity %>
+                                        </div>
+                                    </div>
+                                    <div class="bid-amount-display">
+                                        <div class="bid-amount-value">₹<%= bidder.bidAmount %></div>
+                                        <div class="bid-time"><%= new Date(bidder.bidTime).toLocaleTimeString() %></div>
                                     </div>
                                 </div>
-                                <div class="bid-amount-display">
-                                    <div class="bid-amount-value">₹<%= bidder.bidAmount %></div>
-                                    <div class="bid-time"><%= new Date(bidder.bidTime).toLocaleTimeString() %></div>
-                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="no-bids">
+                                <p>No live bids listed</p>
                             </div>
-                        <% }); %>
-                    <% } else { %>
-                        <div class="no-bids">
-                            <p>No bids yet</p>
-                            <small>Suppliers will appear here when they place bids</small>
-                        </div>
-                    <% } %>
+                        <% } %>
+                    </div>
+                </div>
+                <div>
+                    <h4 style="color:#007bff;">🌏 Bids from Other Cities (<%= otherCityBids.length %>)</h4>
+                    <div id="bidders-othercity">
+                        <% if (otherCityBids.length > 0) { %>
+                            <% otherCityBids.sort((a, b) => a.bidAmount - b.bidAmount).forEach(function(bidder) { %>
+                                <div class="bidder-item">
+                                    <div class="bidder-details">
+                                        <div class="bidder-name"><%= bidder.supplierName %></div>
+                                        <div class="bidder-contact">
+                                            📞 <%= bidder.supplierPhone %> | 📧 <%= bidder.supplierEmail %><br>
+                                            📍 <%= bidder.supplierCity %>
+                                        </div>
+                                    </div>
+                                    <div class="bid-amount-display">
+                                        <div class="bid-amount-value">₹<%= bidder.bidAmount %></div>
+                                        <div class="bid-time"><%= new Date(bidder.bidTime).toLocaleTimeString() %></div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="no-bids">
+                                <p>No live bids listed</p>
+                            </div>
+                        <% } %>
+                    </div>
                 </div>
             </div>
             
@@ -554,13 +599,10 @@
                         <p><strong>Email:</strong> <%= auction.winner.supplierEmail %></p>
                         <p><strong>Address:</strong> <%= auction.winner.supplierAddress %></p>
                     </div>
-                    <div class="winner-contact-buttons">
-                        <a href="tel:<%= auction.winner.supplierPhone %>" class="contact-btn btn-call">📞 Call</a>
-                        <a href="mailto:<%= auction.winner.supplierEmail %>" class="contact-btn btn-email">📧 Email</a>
-                        <a href="https://wa.me/<%= auction.winner.supplierPhone %>" target="_blank" class="contact-btn btn-whatsapp">💬 WhatsApp</a>
-                    </div>
+                    <!-- Contact buttons removed as per user request -->
                 </div>
             <% } %>
+
         </div>
     </div>
     
@@ -568,9 +610,11 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
-        const auctionId = '<%= auction._id %>';
-        const auctionEndTime = new Date('<%= auction.auctionEnd %>');
-        const currentLowestBid = <%= auction.currentLowestBid || auction.basePrice %>;
+        
+        // Get data from HTML data attributes to avoid EJS in JavaScript
+        const auctionId = document.querySelector('[data-auction-id]').getAttribute('data-auction-id');
+        const auctionEndTime = new Date(document.querySelector('[data-auction-end]').getAttribute('data-auction-end'));
+        const currentLowestBid = parseFloat(document.querySelector('[data-current-lowest]').getAttribute('data-current-lowest'));
         
         // Join the auction room
         socket.emit('joinVendorAuction', auctionId);
@@ -604,8 +648,14 @@
         document.getElementById('bid-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            console.log('Bid form submitted');
+            
             const bidAmount = parseFloat(document.getElementById('bid-amount').value);
-            const currentLowest = <%= auction.currentLowestBid || auction.basePrice %>;
+            const currentLowest = parseFloat(document.querySelector('[data-current-lowest]').getAttribute('data-current-lowest'));
+            
+            console.log('Bid amount:', bidAmount);
+            console.log('Current lowest:', currentLowest);
+            console.log('Auction ID:', auctionId);
             
             if (bidAmount >= currentLowest) {
                 showError('Your bid must be lower than the current lowest bid');
@@ -618,6 +668,7 @@
             }
             
             try {
+                console.log('Sending bid request...');
                 const response = await fetch('/supplier/place-vendor-bid', {
                     method: 'POST',
                     headers: {
@@ -629,18 +680,21 @@
                     })
                 });
                 
+                console.log('Response status:', response.status);
                 const result = await response.json();
+                console.log('Response result:', result);
                 
                 if (result.success) {
                     showSuccess('Bid placed successfully!');
                     document.getElementById('bid-amount').value = '';
                     document.getElementById('bid-amount').max = bidAmount;
                     // Update current lowest bid display
-                    updateCurrentBid(bidAmount, '<%= supplier.name %>');
+                    updateCurrentBid(bidAmount, document.querySelector('[data-supplier-name]').getAttribute('data-supplier-name'));
                 } else {
                     showError(result.error || 'Failed to place bid');
                 }
             } catch (error) {
+                console.error('Error placing bid:', error);
                 showError('Error placing bid: ' + error.message);
             }
         });

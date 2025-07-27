@@ -51,10 +51,9 @@
         
         .nav-logo img {
             height: 40px;
-            width: 40px;
+            width: auto;
             margin-right: 10px;
-            border-radius: 50%;
-            object-fit: cover;
+            object-fit: contain;
         }
         
         .nav-right {
@@ -131,6 +130,22 @@
             margin: 0;
             font-size: 1.2rem;
             opacity: 0.9;
+        }
+        
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+        
+        .back-btn:hover {
+            background: #5a6268;
         }
         
         .requirements-grid {
@@ -575,6 +590,7 @@
             <div class="header">
                 <h1>My Requirements</h1>
                 <p>Track your submitted requirements and supplier responses</p>
+                <a href="/vendor" class="back-btn">← Back to Dashboard</a>
             </div>
             
             <% if (requirements && requirements.length > 0) { %>
@@ -609,16 +625,16 @@
                                     </div>
                                 </div>
                                 
-                                <% if (requirement.responses && requirement.responses.length > 0) { %>
+                                <% if (requirement.supplierResponses && requirement.supplierResponses.length > 0) { %>
                                     <div class="responses-section">
                                         <div class="responses-header">
-                                            <h4>Supplier Responses (<%= requirement.responses.length %>)</h4>
+                                            <h4>Supplier Responses (<%= requirement.supplierResponses.length %>)</h4>
                                         </div>
-                                        <% requirement.responses.forEach(response => { %>
+                                        <% requirement.supplierResponses.forEach(response => { %>
                                             <div class="response-item">
                                                 <div class="response-header">
                                                     <span class="response-supplier"><%= response.supplierName %></span>
-                                                    <span class="response-time"><%= new Date(response.createdAt).toLocaleString() %></span>
+                                                    <span class="response-time"><%= new Date(response.responseTime).toLocaleString() %></span>
                                                 </div>
                                                 <div class="response-content">
                                                     <%= response.message %>
