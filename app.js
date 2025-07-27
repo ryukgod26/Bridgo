@@ -19,6 +19,9 @@ const io = socketIO(server, {
   }
 });
 
+// Attach io to app for use in routes
+app.set("io", io);
+
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(express.static(path.join(__dirname,"public")));
@@ -38,15 +41,11 @@ app.use(express.json());
 const homeRouter=require("./routes/homeRouter");
 const vendorRouter = require('./routes/vendorRouter');
 const supplierRouter= require('./routes/supplierRouter');
-const supplierAuth=require("./controllers/supplierAuth");
-const vendorAuth=require("./controllers/vendorAuth");
 
 
 
 app.use("/vendor",vendorRouter);
 app.use("/supplier",supplierRouter);
-app.use("/",vendorAuth);
-app.use("/",supplierAuth);
 app.use("/",homeRouter);
 
 // MongoDB connection
@@ -56,9 +55,60 @@ mongoose.connect(process.env.MONGO_URI, {
 }).then(() => console.log(""))
   .catch(err => console.error(err));
 
+// Socket.IO event handlers
+io.on('connection', (socket) => {
+  console.log('A user connected:', socket.id);
+
+  // Join auction room
+  socket.on('joinAuction', (auctionId) => {
+    socket.join(`auction_${auctionId}`);
+    console.log(`User ${socket.id} joined auction ${auctionId}`);
+  });
+
+  // Leave auction room
+  socket.on('leaveAuction', (auctionId) => {
+    socket.leave(`auction_${auctionId}`);
+    console.log(`User ${socket.id} left auction ${auctionId}`);
+  });
+
+  // Handle new bids
+  socket.on('placeBid', async (data) => {
+    try {
+      const { auctionId, vendorId, vendorName, bidAmount } = data;
+      
+      // Emit to all users in the auction room
+      socket.to(`auction_${auctionId}`).emit('newBid', {
+        auctionId,
+        vendorId,
+        vendorName,
+        bidAmount,
+        timestamp: new Date()
+      });
+      
+
+    } catch (error) {
+      console.error('Error handling bid:', error);
+    }
+  });
+
+  // Handle auction end
+  socket.on('auctionEnded', (auctionId) => {
+    socket.to(`auction_${auctionId}`).emit('auctionEnded', {
+      auctionId,
+      timestamp: new Date()
+    });
+    console.log(`Auction ${auctionId} ended`);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
+});
+
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
 
 module.exports = { io };

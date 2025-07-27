@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Live Auctions - Vendor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f7f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #2e86de, #1b4f72);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5rem;
+        }
+        .header p {
+            margin: 0;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .auctions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .auction-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .auction-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .auction-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        .auction-content {
+            padding: 20px;
+        }
+        .auction-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2e86de;
+            margin-bottom: 10px;
+        }
+        .auction-details {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-top: 15px;
+        }
+        .auction-details p {
+            margin: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f3f4;
+        }
+        .auction-details p:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        .detail-value {
+            color: #2e86de;
+            font-weight: 500;
+        }
+        .live-badge {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
+        .ended-badge {
+            display: inline-block;
+            background: #6c757d;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            animation: none;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        .join-btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2);
+            font-size: 1.1rem;
+        }
+        .join-btn:hover {
+            background: linear-gradient(135deg, #219150, #27ae60);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.3);
+        }
+        .no-auctions {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+            font-size: 1.2rem;
+        }
+        .timer {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-top: 15px;
+            background: linear-gradient(135deg, #fff5f5, #fed7d7);
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #feb2b2;
+            text-align: center;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 4px rgba(229, 62, 62, 0.1);
+        }
+        .current-bid {
+            background: linear-gradient(135deg, #fff5f5, #fed7d7);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid #feb2b2;
+        }
+        .current-bid strong {
+            color: #e53e3e;
+            font-size: 1.1rem;
+        }
+        .current-bid small {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+            .auctions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔴 Live Auctions</h1>
+            <p>Welcome, <strong><%= vendor.name %></strong>! Join live auctions and place your bids in real-time.</p>
+        </div>
+
+        <!-- Search Panel -->
+        <div style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 30px; box-shadow: 0 2px 12px rgba(0,0,0,0.07);">
+            <h3 style="margin: 0 0 15px 0; color: #2e86de;">🔍 Search Auctions</h3>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                <input type="text" id="search-item" placeholder="Enter item name (e.g., rice, wheat, sugar)" style="flex: 1; min-width: 250px; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem;">
+                <button onclick="searchAuctions()" style="background: #2e86de; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: background 0.2s;">Search</button>
+                <button onclick="clearSearch()" style="background: #6c757d; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: background 0.2s;">Clear</button>
+            </div>
+        </div>
+
+        <% if (auctions && auctions.length > 0) { %>
+            <!-- Local Auctions (Same City) -->
+            <div style="margin-bottom: 40px;">
+                <h2 style="color: #28a745; margin-bottom: 20px; font-size: 1.8rem; border-bottom: 3px solid #28a745; padding-bottom: 10px;">
+                    🏠 Local Auctions (<%= vendor.city || 'Your City' %>)
+                </h2>
+                <div class="auctions-grid" id="local-auctions">
+                    <% 
+                    const localAuctions = auctions.filter(auction => 
+                        auction.supplierName && 
+                        auction.supplierName.toLowerCase().includes((vendor.city || '').toLowerCase())
+                    );
+                    %>
+                    <% if (localAuctions.length > 0) { %>
+                        <% localAuctions.forEach(function(auction) { %>
+                    <div class="auction-card">
+                        <% if (auction.image) { %>
+                            <img class="auction-image" src="<%= auction.image %>" alt="<%= auction.name %>">
+                        <% } else { %>
+                            <div class="auction-image" style="display: flex; align-items: center; justify-content: center; color: #999; font-size: 0.9rem; background: #f8f9fa; border: 1px dashed #dee2e6;">
+                                📷<br>No Image
+                            </div>
+                        <% } %>
+                        
+                        <div class="auction-content">
+                            <% if (auction.auctionEnd && new Date(auction.auctionEnd) <= new Date()) { %>
+                                <div class="ended-badge">🟢 ENDED</div>
+                            <% } else { %>
+                                <div class="live-badge">🔴 LIVE</div>
+                            <% } %>
+                            <div class="auction-title"><%= auction.name %></div>
+                            
+                            <div class="auction-details">
+                                <p>
+                                    <span class="detail-label">💰 Base Price:</span>
+                                    <span class="detail-value">₹<%= auction.basePrice %></span>
+                                </p>
+                                <p>
+                                    <span class="detail-label">📦 Quantity:</span>
+                                    <span class="detail-value"><%= auction.quantity %></span>
+                                </p>
+                                <p>
+                                    <span class="detail-label">📍 Location:</span>
+                                    <span class="detail-value"><%= auction.area %>, <%= auction.city %></span>
+                                </p>
+                                <p>
+                                    <span class="detail-label">🏢 Supplier:</span>
+                                    <span class="detail-value"><%= auction.supplierName %></span>
+                                </p>
+                                
+                                <% if (auction.currentBid && auction.currentBid > auction.basePrice) { %>
+                                    <div class="current-bid">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                            <span class="detail-label">🔥 Current Bid:</span>
+                                            <span class="detail-value" style="color: #e53e3e; font-size: 1.2rem;">₹<%= auction.currentBid %></span>
+                                        </div>
+                                        <div style="text-align: center; color: #718096; font-size: 0.9rem;">
+                                            by <strong><%= auction.currentBidder || 'Unknown' %></strong>
+                                        </div>
+                                    </div>
+                                <% } %>
+                                
+                                <% if (auction.auctionEnd) { %>
+                                    <div class="timer" id="timer-<%= auction._id %>">
+                                        <span id="end-time-<%= auction._id %>" style="display: none;"><%= auction.auctionEnd.toISOString() %></span>
+                                        <span id="countdown-<%= auction._id %>">⏰ Loading timer...</span>
+                                    </div>
+                                <% } %>
+                            </div>
+                            
+                            <a href="/vendor/join-auction/<%= auction._id %>" class="join-btn">Join Auction</a>
+                        </div>
+                    </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div style="text-align: center; padding: 30px; color: #666; background: #f8f9fa; border-radius: 8px;">
+                            <p>No local auctions available in <%= vendor.city || 'your city' %></p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Other Auctions (Different Cities) -->
+            <div>
+                <h2 style="color: #6c757d; margin-bottom: 20px; font-size: 1.8rem; border-bottom: 3px solid #6c757d; padding-bottom: 10px;">
+                    🌍 Other Auctions
+                </h2>
+                <div class="auctions-grid" id="other-auctions">
+                    <% 
+                    const otherAuctions = auctions.filter(auction => 
+                        !auction.supplierName || 
+                        !auction.supplierName.toLowerCase().includes((vendor.city || '').toLowerCase())
+                    );
+                    %>
+                    <% if (otherAuctions.length > 0) { %>
+                        <% otherAuctions.forEach(function(auction) { %>
+                            <div class="auction-card" data-item-name="<%= auction.name.toLowerCase() %>">
+                                <% if (auction.image) { %>
+                                    <img class="auction-image" src="<%= auction.image %>" alt="<%= auction.name %>">
+                                <% } else { %>
+                                    <div class="auction-image" style="display: flex; align-items: center; justify-content: center; color: #999; font-size: 0.9rem; background: #f8f9fa; border: 1px dashed #dee2e6;">
+                                        📷<br>No Image
+                                    </div>
+                                <% } %>
+                                
+                                <div class="auction-content">
+                                    <% if (auction.auctionEnd && new Date(auction.auctionEnd) <= new Date()) { %>
+                                        <div class="ended-badge">🟢 ENDED</div>
+                                    <% } else { %>
+                                        <div class="live-badge">🔴 LIVE</div>
+                                    <% } %>
+                                    <div class="auction-title"><%= auction.name %></div>
+                                    
+                                    <div class="auction-details">
+                                        <p>
+                                            <span class="detail-label">💰 Base Price:</span>
+                                            <span class="detail-value">₹<%= auction.basePrice %></span>
+                                        </p>
+                                        <p>
+                                            <span class="detail-label">📦 Quantity:</span>
+                                            <span class="detail-value"><%= auction.quantity %></span>
+                                        </p>
+                                        <p>
+                                            <span class="detail-label">📍 Location:</span>
+                                            <span class="detail-value"><%= auction.area %>, <%= auction.city %></span>
+                                        </p>
+                                        <p>
+                                            <span class="detail-label">🏢 Supplier:</span>
+                                            <span class="detail-value"><%= auction.supplierName %></span>
+                                        </p>
+                                        
+                                        <% if (auction.currentBid && auction.currentBid > auction.basePrice) { %>
+                                            <div class="current-bid">
+                                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                                    <span class="detail-label">🔥 Current Bid:</span>
+                                                    <span class="detail-value" style="color: #e53e3e; font-size: 1.2rem;">₹<%= auction.currentBid %></span>
+                                                </div>
+                                                <div style="text-align: center; color: #718096; font-size: 0.9rem;">
+                                                    by <strong><%= auction.currentBidder || 'Unknown' %></strong>
+                                                </div>
+                                            </div>
+                                        <% } %>
+                                        
+                                        <% if (auction.auctionEnd) { %>
+                                            <div class="timer" id="timer-<%= auction._id %>">
+                                                <span id="end-time-<%= auction._id %>" style="display: none;"><%= auction.auctionEnd.toISOString() %></span>
+                                                <span id="countdown-<%= auction._id %>">⏰ Loading timer...</span>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                    
+                                    <a href="/vendor/join-auction/<%= auction._id %>" class="join-btn">Join Auction</a>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div style="text-align: center; padding: 30px; color: #666; background: #f8f9fa; border-radius: 8px;">
+                            <p>No other auctions available</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="no-auctions">
+                <h2>No Live Auctions Available</h2>
+                <p>There are currently no live auctions. Check back later!</p>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Socket.IO Client -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        
+        // Search functionality
+        function searchAuctions() {
+            const searchTerm = document.getElementById('search-item').value.toLowerCase().trim();
+            const auctionCards = document.querySelectorAll('.auction-card');
+            
+            if (!searchTerm) {
+                // Show all auctions if search is empty
+                auctionCards.forEach(card => {
+                    card.style.display = 'block';
+                });
+                return;
+            }
+            
+            auctionCards.forEach(card => {
+                const itemName = card.getAttribute('data-item-name') || '';
+                const title = card.querySelector('.auction-title')?.textContent.toLowerCase() || '';
+                
+                if (itemName.includes(searchTerm) || title.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        
+        function clearSearch() {
+            document.getElementById('search-item').value = '';
+            const auctionCards = document.querySelectorAll('.auction-card');
+            auctionCards.forEach(card => {
+                card.style.display = 'block';
+            });
+        }
+        
+        // Add data-item-name to local auction cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const localAuctionCards = document.querySelectorAll('#local-auctions .auction-card');
+            localAuctionCards.forEach(card => {
+                const title = card.querySelector('.auction-title')?.textContent || '';
+                card.setAttribute('data-item-name', title.toLowerCase());
+            });
+        });
+        
+        // Listen for new auctions starting
+        socket.on('auctionStarted', (data) => {
+            // You could add logic here to dynamically add new auctions to the page
+            location.reload(); // Simple approach: reload the page
+        });
+        
+        // Update timers for auctions
+        function updateTimers() {
+            // Find all auction cards
+            const auctionCards = document.querySelectorAll('.auction-card');
+            
+            auctionCards.forEach(card => {
+                const timer = card.querySelector('[id^="timer-"]');
+                if (!timer) {
+                    return;
+                }
+                
+                const auctionId = timer.id.replace('timer-', '');
+                const endTimeElement = card.querySelector(`#end-time-${auctionId}`);
+                const countdownElement = card.querySelector(`#countdown-${auctionId}`);
+                
+
+                
+                if (endTimeElement && countdownElement) {
+                    try {
+                        // Parse the end time from the text content
+                        const endTimeText = endTimeElement.textContent.trim();
+                        const endTime = new Date(endTimeText);
+                        const now = new Date();
+                        const timeLeft = endTime - now;
+                        
+
+                        
+                        if (isNaN(timeLeft) || timeLeft <= 0) {
+                            countdownElement.textContent = 'Auction Ended';
+                            timer.style.color = '#666';
+                            
+                            // Update the badge to show ENDED
+                            const badge = card.querySelector('.live-badge');
+                            if (badge) {
+                                badge.textContent = '🟢 ENDED';
+                                badge.className = 'ended-badge';
+                            }
+                        } else {
+                            const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                            
+                            countdownElement.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                        }
+                    } catch (error) {
+                        console.error(`Error processing timer for auction ${auctionId}:`, error);
+                        countdownElement.textContent = 'Timer error';
+                    }
+                } else {
+                    if (countdownElement) {
+                        countdownElement.textContent = 'Timer not available';
+                    }
+                }
+            });
+        }
+        
+        // Wait for DOM to be ready
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Initial update
+            updateTimers();
+            
+            // Update timers every second
+            setInterval(updateTimers, 1000);
+        });
+    </script>
+</body>
+</html> 

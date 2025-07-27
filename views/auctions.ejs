@@ -32,6 +32,47 @@
             color: #444;
             font-size: 1.08rem;
         }
+        .start-auction-form {
+            margin-top: 18px;
+            margin-bottom: 32px;
+            background: #f8fbff;
+            border: 1px solid #e0e7ef;
+            border-radius: 8px;
+            padding: 18px 22px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .start-auction-form label {
+            font-weight: 500;
+            color: #1b4f72;
+            margin-right: 8px;
+        }
+        .start-auction-form select,
+        .start-auction-form input[type="number"] {
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid #bcd0ee;
+            font-size: 1rem;
+            margin-right: 12px;
+        }
+        .start-auction-form input[type="number"] {
+            width: 80px;
+        }
+        .start-auction-form button {
+            background: #2e86de;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 18px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .start-auction-form button:hover {
+            background: #1b4f72;
+        }
         .auctions-list {
             margin-top: 18px;
         }
@@ -90,6 +131,11 @@
                 height: 180px;
                 margin-bottom: 10px;
             }
+            .start-auction-form {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
         }
     </style>
 </head>
@@ -100,27 +146,48 @@
             <div class="header-details">
                 <strong>Name:</strong> <%= supplier && supplier.name ? supplier.name : "Unknown" %> <br>
                 <strong>Supplier ID:</strong> <%= supplier && supplier.supplierId ? supplier.supplierId : "N/A" %> <br>
-                <strong>Email:</strong> <%= supplier && supplier.email ? supplier.email : "N/A" %> <br>
-                <strong>Phone:</strong> <%= supplier && supplier.phone ? supplier.phone : "N/A" %> <br>
-                <strong>Area:</strong> <%= supplier && supplier.area ? supplier.area : "N/A" %> <br>
-                <strong>City:</strong> <%= supplier && supplier.city ? supplier.city : "N/A" %> <br>
-                <strong>State:</strong> <%= supplier && supplier.state ? supplier.state : "N/A" %>
-            </div>
         </div>
+
+        <!-- Start Auction Form -->
+        <form class="start-auction-form" action="/supplier/startAuction" method="POST">
+            <label for="auctionId">Select Auction:</label>
+            <select name="auctionId" id="auctionId" required>
+                <option value="" disabled selected>Select auction</option>
+                <% if (auctions && auctions.length > 0) { %>
+                    <% auctions.forEach(function(auction) { %>
+                        <option value="<%= auction._id %>"><%= auction.name %></option>
+                    <% }); %>
+                <% } %>
+            </select>
+            <label for="duration">Duration (minutes):</label>
+            <input type="number" name="duration" id="duration" min="1" max="1440" required placeholder="e.g. 30">
+            <button type="submit">Start Auction</button>
+        </form>
+
         <div class="auctions-list">
             <% if (auctions && auctions.length > 0) { %>
                 <% auctions.forEach(function(auction) { %>
-                    <div class="auction-card">
+                    <div class="auction-card" id="auction-<%= auction._id %>">
                         <% if (auction.image) { %>
                             <img class="auction-image" src="<%= auction.image %>" alt="Auction Image">
                         <% } else { %>
                             <div class="auction-image" style="display:flex;align-items:center;justify-content:center;color:#aaa;font-size:0.95rem;">No Image</div>
                         <% } %>
                         <div class="auction-details">
-                            <div class="auction-title"><%= auction.name %></div>
+                            <div class="auction-title">
+                                <%= auction.name %>
+                                <% if (auction.isLive && auction.auctionEnd && new Date(auction.auctionEnd) > new Date()) { %>
+                                    <span style="color: #e74c3c; font-size: 0.9rem; margin-left: 10px;">🔴 LIVE</span>
+                                <% } else if (auction.isLive && auction.auctionEnd && new Date(auction.auctionEnd) <= new Date()) { %>
+                                    <span style="color: #6c757d; font-size: 0.9rem; margin-left: 10px;">🟢 ENDED</span>
+                                <% } %>
+                            </div>
                             <div class="auction-meta">
                                 <span><strong>Base Price:</strong> ₹<%= auction.basePrice %></span>
                                 <span><strong>Quantity:</strong> <%= auction.quantity %></span>
+                                <% if (auction.isLive) { %>
+                                    <span><strong>Current Bid:</strong> ₹<span id="current-bid-<%= auction._id %>"><%= auction.currentBid || auction.basePrice %></span></span>
+                                <% } %>
                             </div>
                             <div class="auction-meta">
                                 <span><strong>Area:</strong> <%= auction.area ? auction.area : "N/A" %></span>
@@ -129,7 +196,95 @@
                             </div>
                             <div class="auction-meta">
                                 <span><strong>Supplier Name:</strong> <%= auction.supplierName %></span>
+                                <% if (auction.isLive && auction.auctionEnd) { %>
+                                    <span><strong>Ends:</strong> <span id="end-time-<%= auction._id %>"><%= new Date(auction.auctionEnd).toLocaleString() %></span></span>
+                                <% } %>
                             </div>
+                            <% if (auction.isLive && auction.auctionEnd && new Date(auction.auctionEnd) > new Date()) { %>
+                                <div class="auction-meta">
+                                    <span><strong>Status:</strong> <span style="color: #e74c3c;">Live Auction</span></span>
+                                    <span><strong>Bidders:</strong> <span id="bidders-count-<%= auction._id %>"><%= auction.bidders ? auction.bidders.length : 0 %></span></span>
+                                </div>
+                            <% } else if (auction.isLive && auction.auctionEnd && new Date(auction.auctionEnd) <= new Date()) { %>
+                                <div class="auction-meta">
+                                    <span><strong>Status:</strong> <span style="color: #6c757d;">Auction Ended</span></span>
+                                    <span><strong>Bidders:</strong> <span id="bidders-count-<%= auction._id %>"><%= auction.bidders ? auction.bidders.length : 0 %></span></span>
+                                </div>
+                                
+                                <!-- Winner Details Section -->
+                                <% if (auction.currentBidder && auction.bidders && auction.bidders.length > 0) { %>
+                                    <div class="winner-details" style="background: linear-gradient(135deg, #f8fff9, #e8f5e8); border: 2px solid #28a745; border-radius: 12px; padding: 20px; margin-top: 20px; box-shadow: 0 4px 12px rgba(40, 167, 69, 0.1);">
+                                        <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                                            <div style="background: #28a745; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 1.2rem;">
+                                                🏆
+                                            </div>
+                                            <div>
+                                                <h4 style="color: #28a745; margin: 0; font-size: 1.3rem; font-weight: 600;">Winning Bidder</h4>
+                                                <p style="color: #6c757d; margin: 5px 0 0 0; font-size: 0.9rem;">Auction completed successfully</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Bid Information -->
+                                        <div style="background: white; border-radius: 8px; padding: 15px; margin-bottom: 15px; border: 1px solid #e9ecef;">
+                                            <h5 style="color: #495057; margin: 0 0 12px 0; font-size: 1.1rem; border-bottom: 2px solid #28a745; padding-bottom: 5px;">📊 Bid Information</h5>
+                                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; font-size: 0.95rem;">
+                                                <div style="background: #f8f9fa; padding: 8px 12px; border-radius: 6px;">
+                                                    <strong style="color: #495057;">Winner Name:</strong><br>
+                                                    <span style="color: #28a745; font-weight: 600;"><%= auction.currentBidder %></span>
+                                                </div>
+                                                <div style="background: #f8f9fa; padding: 8px 12px; border-radius: 6px;">
+                                                    <strong style="color: #495057;">Winning Bid:</strong><br>
+                                                    <span style="color: #28a745; font-weight: 600;">₹<%= auction.currentBid %></span>
+                                                </div>
+                                                <div style="background: #f8f9fa; padding: 8px 12px; border-radius: 6px;">
+                                                    <strong style="color: #495057;">Bid Time:</strong><br>
+                                                    <span style="color: #6c757d;"><%= auction.bidders[auction.bidders.length - 1].bidTime ? new Date(auction.bidders[auction.bidders.length - 1].bidTime).toLocaleString() : 'N/A' %></span>
+                                                </div>
+                                                <div style="background: #f8f9fa; padding: 8px 12px; border-radius: 6px;">
+                                                    <strong style="color: #495057;">Total Bids:</strong><br>
+                                                    <span style="color: #6c757d;"><%= auction.bidders.length %></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Contact Information -->
+                                        <div style="background: white; border-radius: 8px; padding: 15px; border: 1px solid #e9ecef;">
+                                            <h5 style="color: #495057; margin: 0 0 12px 0; font-size: 1.1rem; border-bottom: 2px solid #007bff; padding-bottom: 5px;">📞 Contact Information</h5>
+                                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; font-size: 0.95rem;">
+                                                <div style="background: #f8f9fa; padding: 10px 12px; border-radius: 6px; border-left: 4px solid #007bff;">
+                                                    <strong style="color: #495057;">Vendor ID:</strong><br>
+                                                    <span style="color: #007bff; font-weight: 500;"><%= auction.bidders[auction.bidders.length - 1].vendorId || 'N/A' %></span>
+                                                </div>
+                                                <div style="background: #f8f9fa; padding: 10px 12px; border-radius: 6px; border-left: 4px solid #28a745;">
+                                                    <strong style="color: #495057;">Phone:</strong><br>
+                                                    <a href="tel:<%= auction.bidders[auction.bidders.length - 1].vendorPhone || '' %>" style="color: #28a745; text-decoration: none; font-weight: 500;"><%= auction.bidders[auction.bidders.length - 1].vendorPhone || 'N/A' %></a>
+                                                </div>
+                                                <div style="background: #f8f9fa; padding: 10px 12px; border-radius: 6px; border-left: 4px solid #ffc107;">
+                                                    <strong style="color: #495057;">Email:</strong><br>
+                                                    <a href="mailto:<%= auction.bidders[auction.bidders.length - 1].vendorEmail || '' %>" style="color: #ffc107; text-decoration: none; font-weight: 500;"><%= auction.bidders[auction.bidders.length - 1].vendorEmail || 'N/A' %></a>
+                                                </div>
+                                                <div style="background: #f8f9fa; padding: 10px 12px; border-radius: 6px; border-left: 4px solid #6f42c1; grid-column: 1 / -1;">
+                                                    <strong style="color: #495057;">Address:</strong><br>
+                                                    <span style="color: #6f42c1; font-weight: 500;"><%= auction.bidders[auction.bidders.length - 1].vendorAddress || 'N/A' %></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Action Buttons -->
+                                        <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                                            <a href="tel:<%= auction.bidders[auction.bidders.length - 1].vendorPhone || '' %>" style="background: #28a745; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 5px;">
+                                                📞 Call Winner
+                                            </a>
+                                            <a href="mailto:<%= auction.bidders[auction.bidders.length - 1].vendorEmail || '' %>" style="background: #007bff; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 5px;">
+                                                ✉️ Email Winner
+                                            </a>
+                                            <a href="https://wa.me/<%= auction.bidders[auction.bidders.length - 1].vendorPhone || '' %>" target="_blank" style="background: #25d366; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 5px;">
+                                                💬 WhatsApp
+                                            </a>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            <% } %>
                         </div>
                     </div>
                 <% }); %>
@@ -140,5 +295,60 @@
             <% } %>
         </div>
     </div>
+
+    <!-- Socket.IO Client -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        
+        // Listen for auction started events
+        socket.on('auctionStarted', (data) => {
+            // Update the auction card to show live status
+            const auctionCard = document.getElementById(`auction-${data.auctionId}`);
+            if (auctionCard) {
+                const title = auctionCard.querySelector('.auction-title');
+                if (title && !title.innerHTML.includes('🔴 LIVE')) {
+                    title.innerHTML += ' <span style="color: #e74c3c; font-size: 0.9rem; margin-left: 10px;">🔴 LIVE</span>';
+                }
+                
+                // Add live auction details
+                const details = auctionCard.querySelector('.auction-details');
+                if (details) {
+                    const metaDiv = details.querySelector('.auction-meta');
+                    if (metaDiv) {
+                        const currentBidSpan = document.createElement('span');
+                        currentBidSpan.innerHTML = `<strong>Current Bid:</strong> ₹<span id="current-bid-${data.auctionId}">${data.basePrice}</span>`;
+                        metaDiv.appendChild(currentBidSpan);
+                    }
+                }
+            }
+        });
+
+        // Listen for new bids
+        socket.on('newBid', (data) => {
+            const currentBidElement = document.getElementById(`current-bid-${data.auctionId}`);
+            if (currentBidElement) {
+                currentBidElement.textContent = data.bidAmount;
+                // Add a visual indicator for new bid
+                currentBidElement.style.color = '#e74c3c';
+                currentBidElement.style.fontWeight = 'bold';
+                setTimeout(() => {
+                    currentBidElement.style.color = '';
+                    currentBidElement.style.fontWeight = '';
+                }, 2000);
+            }
+        });
+
+        // Listen for auction ended
+        socket.on('auctionEnded', (data) => {
+            const auctionCard = document.getElementById(`auction-${data.auctionId}`);
+            if (auctionCard) {
+                const title = auctionCard.querySelector('.auction-title');
+                if (title) {
+                    title.innerHTML = title.innerHTML.replace('🔴 LIVE', '🟢 ENDED');
+                }
+            }
+        });
+    </script>
 </body>
 </html>

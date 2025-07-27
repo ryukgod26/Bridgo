@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Vendor Auction - Bridgo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .form-container {
+            padding: 40px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #e74c3c;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        
+        .info-box h3 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        
+        .info-box p {
+            color: #6c757d;
+            line-height: 1.6;
+        }
+        
+        .vendor-info {
+            background: #e8f5e8;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+        }
+        
+        .vendor-info h4 {
+            color: #28a745;
+            margin-bottom: 8px;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+            transition: background 0.2s;
+        }
+        
+        .back-btn:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏢 Create Vendor Auction</h1>
+            <p>List your requirements and let suppliers bid with the lowest amount winning</p>
+        </div>
+        
+        <div class="form-container">
+            <a href="/vendor" class="back-btn">← Back to Dashboard</a>
+            
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="error-message">
+                    <%= error %>
+                </div>
+            <% } %>
+            
+            <div class="info-box">
+                <h3>📋 How Vendor Auctions Work</h3>
+                <p>
+                    • <strong>You list your requirements</strong> with item name, quantity, and maximum price<br>
+                    • <strong>Suppliers bid with lower amounts</strong> to win your business<br>
+                    • <strong>Lowest bid wins</strong> - you get the best price<br>
+                    • <strong>Real-time updates</strong> show all bids as they come in
+                </p>
+            </div>
+            
+            <div class="vendor-info">
+                <h4>👤 Vendor Information</h4>
+                <p><strong>Name:</strong> <%= vendor.name %></p>
+                <p><strong>City:</strong> <%= vendor.city %>, <strong>Area:</strong> <%= vendor.area %></p>
+                <p><strong>Contact:</strong> <%= vendor.phone %></p>
+            </div>
+            
+            <form action="/vendor/create-auction" method="POST">
+                <div class="form-group">
+                    <label for="itemName">📦 Item Name *</label>
+                    <input type="text" id="itemName" name="itemName" placeholder="e.g., Rice, Wheat, Sugar, etc." required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quantity">📊 Quantity *</label>
+                        <input type="number" id="quantity" name="quantity" placeholder="e.g., 100" min="1" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="basePrice">💰 Maximum Price (₹) *</label>
+                        <input type="number" id="basePrice" name="basePrice" placeholder="e.g., 5000" min="1" step="0.01" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">📝 Description (Optional)</label>
+                    <textarea id="description" name="description" rows="4" placeholder="Additional details about your requirement, quality specifications, delivery preferences, etc."></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="auctionStart">🕐 Auction Start Time *</label>
+                        <input type="datetime-local" id="auctionStart" name="auctionStart" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="auctionEnd">⏰ Auction End Time *</label>
+                        <input type="datetime-local" id="auctionEnd" name="auctionEnd" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn">🚀 Create Auction</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Set default times (start in 1 hour, end in 2 hours)
+        const now = new Date();
+        const startTime = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour from now
+        const endTime = new Date(now.getTime() + 2 * 60 * 60 * 1000); // 2 hours from now
+        
+        // Format dates for datetime-local input (YYYY-MM-DDTHH:MM)
+        const formatDateTime = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        };
+        
+        // Set default values
+        document.getElementById('auctionStart').value = formatDateTime(startTime);
+        document.getElementById('auctionEnd').value = formatDateTime(endTime);
+        
+        // Validate end time is after start time
+        document.getElementById('auctionEnd').addEventListener('change', function() {
+            const startInput = document.getElementById('auctionStart');
+            const endInput = this;
+            
+            if (!startInput.value || !endInput.value) return;
+            
+            const start = new Date(startInput.value);
+            const end = new Date(endInput.value);
+            
+            if (end <= start) {
+                alert('Auction end time must be after start time');
+                // Set end time to 1 hour after start time
+                const newEndTime = new Date(start.getTime() + 60 * 60 * 1000);
+                endInput.value = formatDateTime(newEndTime);
+            }
+        });
+        
+        // Validate start time is in the future and update end time accordingly
+        document.getElementById('auctionStart').addEventListener('change', function() {
+            const startInput = this;
+            const endInput = document.getElementById('auctionEnd');
+            
+            if (!startInput.value) return;
+            
+            const start = new Date(startInput.value);
+            const now = new Date();
+            
+            if (start <= now) {
+                alert('Auction start time must be in the future');
+                // Set start time to 1 hour from now
+                const newStartTime = new Date(now.getTime() + 60 * 60 * 1000);
+                startInput.value = formatDateTime(newStartTime);
+                
+                // Update end time to 2 hours from now
+                const newEndTime = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+                endInput.value = formatDateTime(newEndTime);
+                return;
+            }
+            
+            // If start time is valid, ensure end time is at least 1 hour after start
+            const currentEnd = new Date(endInput.value);
+            if (currentEnd <= start) {
+                const newEndTime = new Date(start.getTime() + 60 * 60 * 1000);
+                endInput.value = formatDateTime(newEndTime);
+            }
+        });
+        
+        // Add form validation before submit
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const startInput = document.getElementById('auctionStart');
+            const endInput = document.getElementById('auctionEnd');
+            
+            if (!startInput.value || !endInput.value) {
+                alert('Please set both start and end times');
+                e.preventDefault();
+                return;
+            }
+            
+            const start = new Date(startInput.value);
+            const end = new Date(endInput.value);
+            const now = new Date();
+            
+            if (start <= now) {
+                alert('Auction start time must be in the future');
+                e.preventDefault();
+                return;
+            }
+            
+            if (end <= start) {
+                alert('Auction end time must be after start time');
+                e.preventDefault();
+                return;
+            }
+        });
+    </script>
+</body>
+</html> 

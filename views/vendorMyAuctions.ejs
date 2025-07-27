@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Vendor Auctions - Bridgo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+            transition: background 0.2s;
+        }
+        
+        .back-btn:hover {
+            background: #5a6268;
+        }
+        
+        .create-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        
+        .create-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .auction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .auction-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.2s;
+            border: 2px solid #f8f9fa;
+        }
+        
+        .auction-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .auction-header {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .auction-header h3 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+        
+        .auction-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        
+        .status-pending {
+            background: #ffc107;
+            color: #856404;
+        }
+        
+        .status-live {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .status-ended {
+            background: #28a745;
+            color: white;
+        }
+        
+        .auction-body {
+            padding: 20px;
+        }
+        
+        .auction-details {
+            margin-bottom: 20px;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f3f4;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .detail-value {
+            color: #6c757d;
+        }
+        
+        .bid-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .bid-info h4 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        
+        .lowest-bid {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #28a745;
+        }
+        
+        .no-bids {
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .auction-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .btn-start {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-start:hover {
+            background: #218838;
+        }
+        
+        .btn-view {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-view:hover {
+            background: #0056b3;
+        }
+        
+        .btn-disabled {
+            background: #6c757d;
+            color: white;
+            cursor: not-allowed;
+        }
+        
+        .winner-section {
+            background: #e8f5e8;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+        }
+        
+        .winner-section h4 {
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+        
+        .winner-details {
+            display: grid;
+            gap: 8px;
+        }
+        
+        .winner-contact {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .contact-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .btn-call {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-email {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-whatsapp {
+            background: #25d366;
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #495057;
+        }
+        
+        .empty-state p {
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏢 My Vendor Auctions</h1>
+            <p>Manage your auctions and track supplier bids</p>
+        </div>
+        
+        <div class="content">
+            <a href="/vendor" class="back-btn">← Back to Dashboard</a>
+            <a href="/vendor/create-auction" class="create-btn">➕ Create New Auction</a>
+            
+            <% if (typeof success !== 'undefined' && success) { %>
+                <div class="success-message">
+                    ✅ Auction created successfully!
+                </div>
+            <% } %>
+            
+            <% if (auctions.length === 0) { %>
+                <div class="empty-state">
+                    <h3>📋 No Auctions Yet</h3>
+                    <p>You haven't created any auctions yet. Start by creating your first auction to get suppliers bidding on your requirements.</p>
+                    <a href="/vendor/create-auction" class="create-btn">🚀 Create Your First Auction</a>
+                </div>
+            <% } else { %>
+                <div class="auction-grid">
+                    <% auctions.forEach(function(auction) { %>
+                        <div class="auction-card">
+                            <div class="auction-header">
+                                <h3><%= auction.itemName %></h3>
+                                <div class="auction-status status-<%= auction.status %>">
+                                    <% if (auction.status === 'pending') { %>
+                                        ⏳ PENDING
+                                    <% } else if (auction.status === 'live') { %>
+                                        🔴 LIVE
+                                    <% } else if (auction.status === 'ended') { %>
+                                        🟢 ENDED
+                                    <% } %>
+                                </div>
+                            </div>
+                            
+                            <div class="auction-body">
+                                <div class="auction-details">
+                                    <div class="detail-row">
+                                        <span class="detail-label">Quantity:</span>
+                                        <span class="detail-value"><%= auction.quantity %></span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Max Price:</span>
+                                        <span class="detail-value">₹<%= auction.basePrice %></span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Start Time:</span>
+                                        <span class="detail-value"><%= new Date(auction.auctionStart).toLocaleString() %></span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">End Time:</span>
+                                        <span class="detail-value"><%= new Date(auction.auctionEnd).toLocaleString() %></span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="detail-label">Total Bids:</span>
+                                        <span class="detail-value"><%= auction.bidders ? auction.bidders.length : 0 %></span>
+                                    </div>
+                                </div>
+                                
+                                <div class="bid-info">
+                                    <h4>💰 Current Lowest Bid</h4>
+                                    <% if (auction.currentLowestBid) { %>
+                                        <div class="lowest-bid">₹<%= auction.currentLowestBid %></div>
+                                        <small>by <%= auction.currentLowestBidder %></small>
+                                    <% } else { %>
+                                        <div class="no-bids">No bids yet</div>
+                                    <% } %>
+                                </div>
+                                
+                                <div class="auction-actions">
+                                    <% if (auction.status === 'pending') { %>
+                                        <button class="action-btn btn-start" onclick="startAuction('<%= auction._id %>')">🚀 Start Auction</button>
+                                    <% } else if (auction.status === 'live') { %>
+                                        <a href="/vendor/live-vendor-auction/<%= auction._id %>" class="action-btn btn-view">👁️ View Live</a>
+                                    <% } else { %>
+                                        <button class="action-btn btn-disabled" disabled>✅ Completed</button>
+                                    <% } %>
+                                </div>
+                                
+                                <% if (auction.winner && auction.status === 'ended') { %>
+                                    <div class="winner-section">
+                                        <h4>🏆 Winner</h4>
+                                        <div class="winner-details">
+                                            <div><strong>Supplier:</strong> <%= auction.winner.supplierName %></div>
+                                            <div><strong>Winning Bid:</strong> ₹<%= auction.winner.winningBid %></div>
+                                            <div><strong>Phone:</strong> <%= auction.winner.supplierPhone %></div>
+                                            <div><strong>Email:</strong> <%= auction.winner.supplierEmail %></div>
+                                        </div>
+                                        <div class="winner-contact">
+                                            <a href="tel:<%= auction.winner.supplierPhone %>" class="contact-btn btn-call">📞 Call</a>
+                                            <a href="mailto:<%= auction.winner.supplierEmail %>" class="contact-btn btn-email">📧 Email</a>
+                                            <a href="https://wa.me/<%= auction.winner.supplierPhone %>" target="_blank" class="contact-btn btn-whatsapp">💬 WhatsApp</a>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } %>
+        </div>
+    </div>
+    
+    <script>
+        function startAuction(auctionId) {
+            if (confirm('Are you sure you want to start this auction? This action cannot be undone.')) {
+                fetch('/vendor/start-vendor-auction', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ auctionId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Auction started successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error starting auction: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    alert('Error starting auction: ' + error.message);
+                });
+            }
+        }
+    </script>
+</body>
+</html> 

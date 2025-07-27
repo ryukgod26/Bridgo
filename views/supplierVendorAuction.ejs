@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Auction - Bridgo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+            transition: background 0.2s;
+        }
+        
+        .back-btn:hover {
+            background: #5a6268;
+        }
+        
+        .auction-info {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .auction-info h2 {
+            color: #007bff;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .info-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .info-item h4 {
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .info-item p {
+            color: #6c757d;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .vendor-info {
+            background: #e8f5e8;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        
+        .vendor-info h3 {
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+        
+        .vendor-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .vendor-detail {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+        }
+        
+        .vendor-detail strong {
+            color: #495057;
+        }
+        
+        .vendor-detail span {
+            color: #6c757d;
+        }
+        
+        .timer {
+            background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .timer h3 {
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .timer #time-remaining {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+        
+        .bidding-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .current-bid {
+            background: #e8f5e8;
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .current-bid h3 {
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+        
+        .bid-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+        
+        .bidder-info {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .bidding-form {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .bidding-form h3 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .submit-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .bidders-list {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 4px solid #6c757d;
+        }
+        
+        .bidders-list h3 {
+            color: #495057;
+            margin-bottom: 20px;
+        }
+        
+        .bidder-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #007bff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .bidder-details {
+            flex: 1;
+        }
+        
+        .bidder-name {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+        
+        .bidder-contact {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .bid-amount-display {
+            text-align: right;
+        }
+        
+        .bid-amount-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #28a745;
+        }
+        
+        .bid-time {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        .no-bids {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 20px;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .winner-section {
+            background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .winner-section h3 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .winner-details {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .winner-contact-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        .contact-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .btn-call {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-email {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-whatsapp {
+            background: #25d366;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .bidding-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .vendor-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏢 Vendor Auction</h1>
+            <p>Bid with the lowest amount to win this contract</p>
+        </div>
+        
+        <div class="content">
+            <a href="/supplier/vendor-auctions" class="back-btn">← Back to Vendor Auctions</a>
+            
+            <div class="error-message" id="error-message" style="display: none;"></div>
+            <div class="success-message" id="success-message" style="display: none;"></div>
+            
+            <div class="auction-info">
+                <h2><%= auction.itemName %></h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <h4>📦 Quantity Required</h4>
+                        <p><%= auction.quantity %></p>
+                    </div>
+                    <div class="info-item">
+                        <h4>💰 Maximum Price</h4>
+                        <p>₹<%= auction.basePrice %></p>
+                    </div>
+                    <div class="info-item">
+                        <h4>📅 Start Time</h4>
+                        <p><%= new Date(auction.auctionStart).toLocaleString() %></p>
+                    </div>
+                    <div class="info-item">
+                        <h4>⏰ End Time</h4>
+                        <p><%= new Date(auction.auctionEnd).toLocaleString() %></p>
+                    </div>
+                </div>
+                
+                <% if (auction.description) { %>
+                    <div class="info-item">
+                        <h4>📝 Description</h4>
+                        <p><%= auction.description %></p>
+                    </div>
+                <% } %>
+            </div>
+            
+            <div class="vendor-info">
+                <h3>👤 Vendor Information</h3>
+                <div class="vendor-details">
+                    <div class="vendor-detail">
+                        <strong>Name:</strong> <span><%= auction.vendorName %></span>
+                    </div>
+                    <div class="vendor-detail">
+                        <strong>City:</strong> <span><%= auction.vendorCity %></span>
+                    </div>
+                    <div class="vendor-detail">
+                        <strong>Area:</strong> <span><%= auction.vendorArea %></span>
+                    </div>
+                    <div class="vendor-detail">
+                        <strong>Phone:</strong> <span><%= auction.vendorPhone %></span>
+                    </div>
+                    <div class="vendor-detail">
+                        <strong>Email:</strong> <span><%= auction.vendorEmail %></span>
+                    </div>
+                    <div class="vendor-detail">
+                        <strong>Address:</strong> <span><%= auction.vendorAddress %></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="timer" id="auction-timer">
+                <h3>⏱️ Time Remaining</h3>
+                <div id="time-remaining">Loading...</div>
+            </div>
+            
+            <div class="bidding-section">
+                <div class="current-bid">
+                    <h3>💰 Current Lowest Bid</h3>
+                    <% if (auction.currentLowestBid) { %>
+                        <div class="bid-amount">₹<%= auction.currentLowestBid %></div>
+                        <div class="bidder-info">
+                            <strong>Lowest Bidder:</strong> <%= auction.currentLowestBidder %><br>
+                            <small>Total Bids: <%= auction.bidders ? auction.bidders.length : 0 %></small>
+                        </div>
+                    <% } else { %>
+                        <div class="bid-amount">₹<%= auction.basePrice %></div>
+                        <div class="bidder-info">
+                            <strong>No bids yet</strong><br>
+                            <small>Be the first to bid!</small>
+                        </div>
+                    <% } %>
+                </div>
+                
+                <div class="bidding-form">
+                    <h3>💼 Place Your Bid</h3>
+                    <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <h4 style="color: #28a745; margin-bottom: 10px;">👤 Supplier Information</h4>
+                        <p><strong>Name:</strong> <%= supplier.name %></p>
+                        <p><strong>City:</strong> <%= supplier.city %>, <strong>Area:</strong> <%= supplier.area %></p>
+                        <p><strong>Contact:</strong> <%= supplier.phone %></p>
+                    </div>
+                    
+                    <form id="bid-form">
+                        <div class="form-group">
+                            <label for="bid-amount">💰 Your Bid Amount (₹) *</label>
+                            <input type="number" id="bid-amount" name="bidAmount" 
+                                   placeholder="Enter your bid amount" 
+                                   min="1" 
+                                   max="<%= auction.currentLowestBid || auction.basePrice %>" 
+                                   step="0.01" 
+                                   required>
+                            <small style="color: #6c757d; margin-top: 5px; display: block;">
+                                Your bid must be lower than the current lowest bid (₹<%= auction.currentLowestBid || auction.basePrice %>)
+                            </small>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn" id="submit-btn">🚀 Place Bid</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="bidders-list">
+                <h3>📊 All Bids</h3>
+                <div id="bidders-container">
+                    <% if (auction.bidders && auction.bidders.length > 0) { %>
+                        <% auction.bidders.sort((a, b) => a.bidAmount - b.bidAmount).forEach(function(bidder) { %>
+                            <div class="bidder-item">
+                                <div class="bidder-details">
+                                    <div class="bidder-name"><%= bidder.supplierName %></div>
+                                    <div class="bidder-contact">
+                                        📞 <%= bidder.supplierPhone %> | 📧 <%= bidder.supplierEmail %><br>
+                                        📍 <%= bidder.supplierCity %>
+                                    </div>
+                                </div>
+                                <div class="bid-amount-display">
+                                    <div class="bid-amount-value">₹<%= bidder.bidAmount %></div>
+                                    <div class="bid-time"><%= new Date(bidder.bidTime).toLocaleTimeString() %></div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="no-bids">
+                            <p>No bids yet</p>
+                            <small>Suppliers will appear here when they place bids</small>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+            
+            <% if (auction.winner && auction.status === 'ended') { %>
+                <div class="winner-section">
+                    <h3>🏆 Auction Winner</h3>
+                    <div class="winner-details">
+                        <p><strong>Supplier:</strong> <%= auction.winner.supplierName %></p>
+                        <p><strong>Winning Bid:</strong> ₹<%= auction.winner.winningBid %></p>
+                        <p><strong>Phone:</strong> <%= auction.winner.supplierPhone %></p>
+                        <p><strong>Email:</strong> <%= auction.winner.supplierEmail %></p>
+                        <p><strong>Address:</strong> <%= auction.winner.supplierAddress %></p>
+                    </div>
+                    <div class="winner-contact-buttons">
+                        <a href="tel:<%= auction.winner.supplierPhone %>" class="contact-btn btn-call">📞 Call</a>
+                        <a href="mailto:<%= auction.winner.supplierEmail %>" class="contact-btn btn-email">📧 Email</a>
+                        <a href="https://wa.me/<%= auction.winner.supplierPhone %>" target="_blank" class="contact-btn btn-whatsapp">💬 WhatsApp</a>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+    
+    <!-- Socket.IO Client -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const auctionId = '<%= auction._id %>';
+        const auctionEndTime = new Date('<%= auction.auctionEnd %>');
+        const currentLowestBid = <%= auction.currentLowestBid || auction.basePrice %>;
+        
+        // Join the auction room
+        socket.emit('joinVendorAuction', auctionId);
+        
+        // Update timer
+        function updateTimer() {
+            const now = new Date();
+            const timeLeft = auctionEndTime - now;
+            
+            if (timeLeft <= 0) {
+                document.getElementById('time-remaining').textContent = 'Auction Ended';
+                document.getElementById('submit-btn').disabled = true;
+                document.getElementById('bid-amount').disabled = true;
+                showSuccess('Auction has ended!');
+                return;
+            }
+            
+            const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+            
+            document.getElementById('time-remaining').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        // Update timer every second
+        setInterval(updateTimer, 1000);
+        updateTimer();
+        
+        // Handle bid form submission
+        document.getElementById('bid-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const bidAmount = parseFloat(document.getElementById('bid-amount').value);
+            const currentLowest = <%= auction.currentLowestBid || auction.basePrice %>;
+            
+            if (bidAmount >= currentLowest) {
+                showError('Your bid must be lower than the current lowest bid');
+                return;
+            }
+            
+            if (bidAmount <= 0) {
+                showError('Please enter a valid bid amount');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/supplier/place-vendor-bid', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        auctionId: auctionId,
+                        bidAmount: bidAmount
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSuccess('Bid placed successfully!');
+                    document.getElementById('bid-amount').value = '';
+                    document.getElementById('bid-amount').max = bidAmount;
+                    // Update current lowest bid display
+                    updateCurrentBid(bidAmount, '<%= supplier.name %>');
+                } else {
+                    showError(result.error || 'Failed to place bid');
+                }
+            } catch (error) {
+                showError('Error placing bid: ' + error.message);
+            }
+        });
+        
+        // Listen for new bids from other suppliers
+        socket.on('vendorAuctionBid', (data) => {
+            if (data.auctionId === auctionId) {
+                // Update current lowest bid display
+                updateCurrentBid(data.currentLowestBid, data.supplierName);
+                
+                // Update bid input max value
+                document.getElementById('bid-amount').max = data.currentLowestBid;
+                
+                // Add visual effect
+                const bidDisplay = document.querySelector('.bid-amount');
+                bidDisplay.style.color = '#e74c3c';
+                bidDisplay.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    bidDisplay.style.color = '';
+                    bidDisplay.style.transform = '';
+                }, 1000);
+                
+                // Add to bidders list
+                addBidderToList(data.supplierName, data.bidAmount, data.supplierPhone, data.supplierEmail, data.supplierCity);
+                
+                showSuccess(`New bid received: ₹${data.bidAmount} from ${data.supplierName}`);
+            }
+        });
+        
+        // Listen for auction ended
+        socket.on('vendorAuctionEnded', (data) => {
+            if (data.auctionId === auctionId) {
+                document.getElementById('time-remaining').textContent = 'Auction Ended';
+                document.getElementById('submit-btn').disabled = true;
+                document.getElementById('bid-amount').disabled = true;
+                showSuccess('Auction has ended!');
+                
+                // Reload page to show winner
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+            }
+        });
+        
+        function updateCurrentBid(amount, bidderName) {
+            const bidAmountElement = document.querySelector('.bid-amount');
+            const bidderInfoElement = document.querySelector('.bidder-info');
+            
+            if (bidAmountElement) {
+                bidAmountElement.textContent = '₹' + amount;
+            }
+            
+            if (bidderInfoElement) {
+                bidderInfoElement.innerHTML = `
+                    <strong>Lowest Bidder:</strong> ${bidderName}<br>
+                    <small>Total Bids: ${getTotalBids() + 1}</small>
+                `;
+            }
+        }
+        
+        function getTotalBids() {
+            const bidderItems = document.querySelectorAll('.bidder-item');
+            return bidderItems.length;
+        }
+        
+        function addBidderToList(supplierName, bidAmount, supplierPhone, supplierEmail, supplierCity) {
+            const container = document.getElementById('bidders-container');
+            
+            // Remove "no bids" message if exists
+            const noBidsElement = container.querySelector('.no-bids');
+            if (noBidsElement) {
+                noBidsElement.remove();
+            }
+            
+            const bidderItem = document.createElement('div');
+            bidderItem.className = 'bidder-item';
+            bidderItem.innerHTML = `
+                <div class="bidder-details">
+                    <div class="bidder-name">${supplierName}</div>
+                    <div class="bidder-contact">
+                        📞 ${supplierPhone} | 📧 ${supplierEmail}<br>
+                        📍 ${supplierCity}
+                    </div>
+                </div>
+                <div class="bid-amount-display">
+                    <div class="bid-amount-value">₹${bidAmount}</div>
+                    <div class="bid-time">${new Date().toLocaleTimeString()}</div>
+                </div>
+            `;
+            
+            container.appendChild(bidderItem);
+            
+            // Sort bidders by bid amount (lowest first)
+            const bidderItems = Array.from(container.querySelectorAll('.bidder-item'));
+            bidderItems.sort((a, b) => {
+                const aAmount = parseFloat(a.querySelector('.bid-amount-value').textContent.replace('₹', ''));
+                const bAmount = parseFloat(b.querySelector('.bid-amount-value').textContent.replace('₹', ''));
+                return aAmount - bAmount;
+            });
+            
+            // Re-append sorted items
+            bidderItems.forEach(item => container.appendChild(item));
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        function showSuccess(message) {
+            const successDiv = document.getElementById('success-message');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html> 

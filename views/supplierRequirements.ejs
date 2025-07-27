@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vendor Requirements - Supplier</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f7f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #2e86de, #1b4f72);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5rem;
+        }
+        .header p {
+            margin: 0;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        .requirement-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .requirement-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .requirement-header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 20px;
+        }
+        .requirement-header h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.3rem;
+        }
+        .requirement-meta {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        .requirement-content {
+            padding: 20px;
+        }
+        .requirement-details {
+            margin-bottom: 20px;
+        }
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f3f4;
+        }
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        .detail-value {
+            color: #6c757d;
+        }
+        .vendor-info {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .vendor-info h4 {
+            color: #495057;
+            margin: 0 0 10px 0;
+            font-size: 1.1rem;
+        }
+        .vendor-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        .response-form {
+            background: #e3f2fd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        .response-form h4 {
+            color: #1976d2;
+            margin: 0 0 10px 0;
+            font-size: 1.1rem;
+        }
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+        .form-group textarea {
+            height: 80px;
+            resize: vertical;
+        }
+        .submit-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .submit-btn:hover {
+            background: #218838;
+        }
+        .no-requirements {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+            font-size: 1.2rem;
+        }
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #c3e6cb;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+            .requirements-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Vendor Requirements</h1>
+            <p>Welcome, <strong><%= supplier.name %></strong>! View and respond to vendor requirements.</p>
+        </div>
+
+        <% if (success) { %>
+            <div class="success-message">
+                ✅ Your response has been submitted successfully!
+            </div>
+        <% } %>
+
+        <% if (requirements && requirements.length > 0) { %>
+            <div class="requirements-grid">
+                <% requirements.forEach(function(requirement) { %>
+                    <div class="requirement-card">
+                        <div class="requirement-header">
+                            <h3>📦 <%= requirement.itemName ? requirement.itemName.charAt(0).toUpperCase() + requirement.itemName.slice(1) : 'Unknown Item' %></h3>
+                            <div class="requirement-meta">
+                                Posted by <%= requirement.vendorName %> • <%= new Date(requirement.createdAt).toLocaleDateString() %>
+                            </div>
+                        </div>
+                        
+                        <div class="requirement-content">
+                            <div class="requirement-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">📝 Requirement Details:</span>
+                                    <span class="detail-value"><%= requirement.requirement %></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">📦 Quantity Required:</span>
+                                    <span class="detail-value"><%= requirement.quantity %></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">📅 Posted:</span>
+                                    <span class="detail-value"><%= new Date(requirement.createdAt).toLocaleString() %></span>
+                                </div>
+                                <% if (requirement.other) { %>
+                                    <div class="detail-item">
+                                        <span class="detail-label">📝 Additional Notes:</span>
+                                        <span class="detail-value"><%= requirement.other %></span>
+                                    </div>
+                                <% } %>
+                            </div>
+                            
+                            <div class="vendor-info">
+                                <h4>👤 Vendor Contact Information</h4>
+                                <div class="vendor-details">
+                                    <div><strong>Name:</strong> <%= requirement.vendorName %></div>
+                                    <div><strong>Phone:</strong> <a href="tel:<%= requirement.vendorPhone %>" style="color: #007bff; text-decoration: none;"><%= requirement.vendorPhone %></a></div>
+                                    <div><strong>Email:</strong> <a href="mailto:<%= requirement.vendorEmail %>" style="color: #007bff; text-decoration: none;"><%= requirement.vendorEmail %></a></div>
+                                    <div style="grid-column: 1 / -1;"><strong>📍 Address:</strong> <%= requirement.vendorAddress %></div>
+                                </div>
+                            </div>
+                            
+                            <div class="response-form">
+                                <h4>💬 Respond to this Requirement</h4>
+                                <form action="/supplier/respond-requirement" method="POST">
+                                    <input type="hidden" name="requirementId" value="<%= requirement._id %>">
+                                    
+                                    <div class="form-group">
+                                        <label for="message-<%= requirement._id %>">Your Message:</label>
+                                        <textarea id="message-<%= requirement._id %>" name="message" placeholder="Describe how you can fulfill this requirement..." required></textarea>
+                                    </div>
+                                    
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                        <div class="form-group">
+                                            <label for="proposedPrice-<%= requirement._id %>">Proposed Price (₹):</label>
+                                            <input type="number" id="proposedPrice-<%= requirement._id %>" name="proposedPrice" min="0" step="0.01" placeholder="Enter your price" required>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="proposedQuantity-<%= requirement._id %>">Available Quantity:</label>
+                                            <input type="number" id="proposedQuantity-<%= requirement._id %>" name="proposedQuantity" min="1" placeholder="Enter quantity" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="submit" class="submit-btn">Send Response</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <div class="no-requirements">
+                <h2>No Pending Requirements</h2>
+                <p>There are currently no vendor requirements to respond to. Check back later!</p>
+            </div>
+        <% } %>
+    </div>
+</body>
+</html> 

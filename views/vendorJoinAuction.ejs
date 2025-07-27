@@ -125,9 +125,21 @@
         <div class="header">
             <h1>Join a Supplier Auction</h1>
             <p>Welcome, <strong><%= vendor && vendor.name ? vendor.name : "Vendor" %></strong></p>
+            <% if (success) { %>
+                <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 6px; margin-top: 10px; border: 1px solid #c3e6cb;">
+                    ✅ Your requirement has been submitted successfully!
+                </div>
+            <% } %>
+            <% if (error === 'missing_fields') { %>
+                <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 6px; margin-top: 10px; border: 1px solid #f5c6cb;">
+                    ❌ Please fill in all required fields (Item Name, Requirement Details, and Quantity).
+                </div>
+            <% } %>
         </div>
         <form class="requirement-form" action="/vendor/submit-requirement" method="POST">
             <h2>Enter Your Requirement</h2>
+            <label for="itemName">Item Name:</label>
+            <input type="text" id="itemName" name="itemName" required placeholder="Enter item name (e.g., rice, wheat, sugar...)">
             <label for="requirement">Requirement Details:</label>
             <textarea id="requirement" name="requirement" rows="3" required placeholder="Describe your requirement..."></textarea>
             <label for="quantity">Quantity:</label>
@@ -142,15 +154,20 @@
             <% if (auctions && auctions.length > 0) { %>
                 <% auctions.forEach(function(auction) { %>
                     <div class="auction-card">
-                        <div class="auction-title"><%= auction.title %></div>
+                        <div class="auction-title"><%= auction.name %></div>
                         <div class="auction-details">
                             <strong>Organized by:</strong> <%= auction.supplierName %><br>
-                            <strong>Product:</strong> <%= auction.product %><br>
-                            <strong>Start Time:</strong> <%= auction.startTime %><br>
-                            <strong>End Time:</strong> <%= auction.endTime %><br>
-                            <strong>Description:</strong> <%= auction.description %>
+                            <strong>Base Price:</strong> ₹<%= auction.basePrice %><br>
+                            <strong>Quantity:</strong> <%= auction.quantity %><br>
+                            <strong>Location:</strong> <%= auction.area %>, <%= auction.city %><br>
+                            <% if (auction.auctionEnd) { %>
+                                <strong>Ends:</strong> <%= new Date(auction.auctionEnd).toLocaleString() %><br>
+                            <% } %>
+                            <% if (auction.currentBid && auction.currentBid > auction.basePrice) { %>
+                                <strong>Current Bid:</strong> ₹<%= auction.currentBid %><br>
+                            <% } %>
                         </div>
-                        <a class="join-btn" href="/auction/<%= auction._id %>/join">Join Auction</a>
+                        <a class="join-btn" href="/vendor/join-auction/<%= auction._id %>">Join Auction</a>
                     </div>
                 <% }); %>
             <% } else { %>

@@ -126,25 +126,35 @@
         </div>
         <div class="supplier-info">
             <div>
-                <label>Supplier Name:</label>
+                <label>🏢 Supplier Name:</label>
                 <span><%= supplier.name %></span>
             </div>
             <div>
-                <label>Supplier ID:</label>
+                <label>🆔 Supplier ID:</label>
                 <span><%= supplier.supplierId %></span>
             </div>
             <div>
-                <label>Phone:</label>
+                <label>📞 Phone:</label>
                 <span><%= supplier.phone %></span>
             </div>
             <div>
-                <label>Contact Email:</label>
-                <span><%= supplier.contact %></span>
+                <label>📧 Email:</label>
+                <span><%= supplier.email %></span>
+            </div>
+            <div>
+                <label>🏷️ GST Number:</label>
+                <span><%= supplier.gst || 'Not provided' %></span>
+            </div>
+            <div>
+                <label>📍 Address:</label>
+                <span><%= supplier.address %>, <%= supplier.area %>, <%= supplier.city %>, <%= supplier.state %></span>
             </div>
         </div>
         <div class="dashboard-actions">
-            <a href="/suppiler/auction/join" class="join">Join an Auction</a>
+            <a href="/supplier/auction/auctionsView" class="organise">📋 My Auctions</a>
+            <a href="/supplier/requirements" class="organise">📦 Vendor Requirements</a>
             <a href="/supplier/auction/stock" class="organise">Organise an Auction</a>
+            <a href="/supplier/vendor-auctions" class="organise">🏢 Vendor Auctions</a>
         </div>
     </div>
 </body>
