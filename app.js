@@ -156,5 +156,14 @@ const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+const { updateAuctionStatus } = require('./routes/vendorRouter'); // export this from vendor.js
+
+// Call every minute
+setInterval(() => {
+    updateAuctionStatus()
+        .then(() => console.log(""))
+        .catch(err => console.error("Auction status update error:", err));
+}, 10 * 1000);
+
 
 module.exports = { io };

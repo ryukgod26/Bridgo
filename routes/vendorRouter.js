@@ -626,3 +626,4 @@ router.get("/update-auction-status", async (req, res) => {
 });
 
 module.exports = router;
+module.exports.updateAuctionStatus = updateAuctionStatus
