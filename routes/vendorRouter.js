@@ -5,6 +5,10 @@ const Vendor = require("../models/vendorDetails");
 const Stock = require("../models/stock");
 const Requirement = require("../models/requirement");
 const VendorAuction = require("../models/vendorAuction");
+const moment = require("moment-timezone");
+
+
+
 
 // Vendor login route
 router.post("/login", async (req, res) => {
@@ -444,10 +448,9 @@ router.post("/create-auction", async (req, res) => {
             quantity, 
             description, 
             basePrice, 
-            auctionStart, 
-            auctionEnd 
         } = req.body;
-        
+        const auctionStart = moment.tz(req.body.auctionStart, "Asia/Kolkata").toDate();
+        const auctionEnd = moment.tz(req.body.auctionEnd, "Asia/Kolkata").toDate();
         // Validate required fields
         if (!itemName || !quantity || !basePrice || !auctionStart || !auctionEnd) {
             return res.redirect("/vendor/create-auction?error=missing_fields");
