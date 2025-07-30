@@ -437,11 +437,11 @@
                     </div>
                     <div class="info-item">
                         <h4>📅 Start Time</h4>
-                        <p><%= new Date(auction.auctionStart).toLocaleString() %></p>
+                        <p><%= moment(auction.auctionStart).tz("Asia/Kolkata").format("DD MMM YYYY, hh:mm A") %>                        </p>
                     </div>
                     <div class="info-item">
                         <h4>⏰ End Time</h4>
-                        <p><%= new Date(auction.auctionEnd).toLocaleString() %></p>
+                        <p><%= moment(auction.auctionEnd).tz("Asia/Kolkata").format("DD MMM YYYY, hh:mm A") %>                        </p>
                     </div>
                 </div>
                 

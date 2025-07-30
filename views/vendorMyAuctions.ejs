@@ -669,11 +669,13 @@
                                     </div>
                                     <div class="detail-row">
                                         <span class="detail-label">Start Time:</span>
-                                        <span class="detail-value"><%= new Date(auction.auctionStart).toLocaleString() %></span>
+                                        <span class="detail-value"><%= moment(auction.auctionStart).tz("Asia/Kolkata").format("DD MMM YYYY, hh:mm A") %>
+                                        </span>
                                     </div>
                                     <div class="detail-row">
                                         <span class="detail-label">End Time:</span>
-                                        <span class="detail-value"><%= new Date(auction.auctionEnd).toLocaleString() %></span>
+                                        <span class="detail-value"><%= moment(auction.auctionEnd).tz("Asia/Kolkata").format("DD MMM YYYY, hh:mm A") %>
+                                        </span>
                                     </div>
                                     <div class="detail-row">
                                         <span class="detail-label">Total Bids:</span>
@@ -711,9 +713,9 @@
                                             <div><strong>Email:</strong> <%= auction.winner.supplierEmail %></div>
                                         </div>
                                         <div class="winner-contact">
-                                            <a href="tel:<%= auction.winner.supplierPhone %>" class="contact-btn btn-call">📞 Call</a>
+                                            <!-- <a href="tel:<%= auction.winner.supplierPhone %>" class="contact-btn btn-call">📞 Call</a>
                                             <a href="mailto:<%= auction.winner.supplierEmail %>" class="contact-btn btn-email">📧 Email</a>
-                                            <a href="https://wa.me/<%= auction.winner.supplierPhone %>" target="_blank" class="contact-btn btn-whatsapp">💬 WhatsApp</a>
+                                            <a href="https://wa.me/<%= auction.winner.supplierPhone %>" target="_blank" class="contact-btn btn-whatsapp">💬 WhatsApp</a> -->
                                         </div>
                                     </div>
                                 <% } %>

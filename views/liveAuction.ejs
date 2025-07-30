@@ -552,7 +552,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         // Mobile menu toggle
-        const auctionEndTime = new Date("<%= auction.auctionEnd.toISOString() %>");
+        const auctionEndTime = new Date("<%= moment(auction.auctionEnd).tz('Asia/Kolkata').format('DD MMM YYYY, hh:mm A') %>");
         const countdownEl = document.getElementById("countdown");
         let countdownInterval;
 

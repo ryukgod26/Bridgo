@@ -8,6 +8,11 @@ const dotenv = require('dotenv');
 const socketIO = require('socket.io');
 const path=require("path");
 const session = require('express-session');
+const moment = require("moment-timezone");
+
+
+
+
 
 dotenv.config();
 
@@ -21,7 +26,7 @@ const io = socketIO(server, {
 
 // Attach io to app for use in routes
 app.set("io", io);
-
+app.locals.moment = moment;
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(express.static(path.join(__dirname,"public")));

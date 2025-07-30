@@ -483,7 +483,7 @@
                                     </div>
                                     <div class="detail-row">
                                         <span class="detail-label">End Time:</span>
-                                        <span class="detail-value"><%= auction.auctionEnd ? new Date(auction.auctionEnd).toLocaleString() : 'N/A' %></span>
+                                        <span class="detail-value"><%= auction.auctionEnd ? moment(auction.auctionEnd).tz("Asia/Kolkata").format("DD MMM YYYY, hh:mm A")                                            : 'N/A' %></span>
                                     </div>
                                     <div class="detail-row">
                                         <span class="detail-label">Total Bids:</span>
